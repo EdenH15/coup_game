@@ -5,6 +5,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <string>
+#include "Roles/Role.h"
 
 
 namespace CoupG {
@@ -13,20 +14,29 @@ namespace CoupG {
         std::string name;
         int coins;
         bool active;
-        Role role;
+        Role* role;
         bool underSanction;
         int sanctionTurnsLeft = 0;
+        int turnIndex;
 
 
     public:
-        Player(const std::string& name, Role role);
+        Player(const std::string& name, Role* role);
+
+        //getter
         std::string getName();
         int getCoins();
-        void setCoins(int coins);
         bool getActive();
-        void setActive(bool active);
-        Role getRole();
+        Role* getRole();
+        int getSanctionTurnsLeft();
+        bool isUnderSanction();
 
+        //setter
+        void setCoins(int amount);
+        void setActive(bool active);
+        void setSanctionTurnsLeft(int turn);
+
+        // Actions
         void gather();
         void tax();
         void bribe();

@@ -12,20 +12,24 @@ namespace CoupG {
     class Game {
     private:
         std::vector<Player*> allPlayers;
-        int current_player = 0;
-        bool gameActive = false;
-        int coins = 0;
+        int current_player{};
+        bool gameActive{};
+        int numPlayers;
+        std::string theWinner{};
+
 
     public:
-        Game(int numPlayers);
+        explicit Game(int numPlayers);
         ~Game();
         void startGame();
         void endGame();
-        int getCurrentPlayer();
+        int getCurrentPlayer() const;
+        void nextTurn();
         std::string getWinner();
-        int getCoins();
-        void addPlayer(Player& player);
-        void removePlayer(Player& player);
+        bool Game::isPlayerInGame(const Player* player)const;
+        void addPlayer(Player* player);
+        void returnPlayer(Player& player) const;
+        void removePlayer(Player& player) const;
     };
 }
 

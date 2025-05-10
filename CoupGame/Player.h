@@ -21,28 +21,29 @@ namespace CoupG {
 
 
     public:
-        Player(const std::string& name, Role* role);
+        Player(const std::string& name, Role* role,int turnI);
 
         //getter
         std::string getName();
-        int getCoins();
-        bool getActive();
-        Role* getRole();
-        int getSanctionTurnsLeft();
-        bool isUnderSanction();
+        int getCoins() const;
+        bool getActive() const;
+        Role* getRole() const;
+        int getSanctionTurnsLeft() const;
+        bool isUnderSanction() const;
 
         //setter
         void setCoins(int amount);
         void setActive(bool active);
         void setSanctionTurnsLeft(int turn);
+        void setUnderSanction(bool underSanction);
 
         // Actions
         void gather();
         void tax();
         void bribe();
         void arrest(Player& p);
-        void sanction(Player& target);
-        void coup(Player& target);
+        void sanction(Player& p);
+        void coup(Player& p);
 
 
     };

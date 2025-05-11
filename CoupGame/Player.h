@@ -6,6 +6,7 @@
 #define PLAYER_H
 #include <string>
 #include "Roles/Role.h"
+#include "ActionType.h"
 
 
 namespace CoupG {
@@ -18,6 +19,8 @@ namespace CoupG {
         bool underSanction;
         int sanctionTurnsLeft = 0;
         int turnIndex;
+        ActionType lastAction = ActionType::None;
+
 
 
     public:
@@ -30,12 +33,14 @@ namespace CoupG {
         Role* getRole() const;
         int getSanctionTurnsLeft() const;
         bool isUnderSanction() const;
+        ActionType getLastAction() const;
 
         //setter
         void setCoins(int amount);
         void setActive(bool active);
         void setSanctionTurnsLeft(int turn);
         void setUnderSanction(bool underSanction);
+        void setLastAction(ActionType action);
 
         // Actions
         void gather();

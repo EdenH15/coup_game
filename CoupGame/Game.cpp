@@ -61,7 +61,14 @@ namespace CoupG {
         player.setActive(false);
     }
 
+    std::string Game::getUnderArrest() const {
+        return underArrest;
+    }
 
+    void Game::setUnderArrest(Player& p) {
+        underArrest = p.getName();
+
+    }
 
 
 }

@@ -6,6 +6,8 @@
 
 #include <stdexcept>
 
+#include "Roles/Governor.h"
+
 namespace CoupG {
 
     Player::Player(const std::string& name, Role* role, const int turnI)
@@ -34,6 +36,10 @@ namespace CoupG {
     bool Player::isUnderSanction() const {
         return underSanction;
     }
+    ActionType Player::getLastAction() const {
+        return lastAction;
+
+    }
 
     //setter
     void Player::setCoins(const int amount) {
@@ -47,8 +53,12 @@ namespace CoupG {
         sanctionTurnsLeft=turn;
     }
 
-    void Player::setUnderSanction(bool underSanction) {
+    void Player::setUnderSanction(const bool underSanction) {
         this->underSanction = underSanction;
+    }
+
+    void Player::setLastAction(const ActionType action) {
+        this->lastAction = action;
     }
 
     // Actions
@@ -56,9 +66,9 @@ namespace CoupG {
         coins+=1;
     }
     void Player::tax() {
-        coins+=2;
-
+        coins+=role->onTax();
     }
+
     void Player::bribe() {
         coins-=4;
     }

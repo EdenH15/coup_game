@@ -15,6 +15,7 @@ namespace CoupG {
         int current_player{};
         bool gameActive{};
         int numPlayers;
+        std::string underArrest;
         std::string theWinner{};
 
 
@@ -24,6 +25,8 @@ namespace CoupG {
         void startGame();
         void endGame();
         int getCurrentPlayer() const;
+        std::string getUnderArrest() const;
+        void setUnderArrest(Player& p);
         void nextTurn();
         std::string getWinner();
         bool Game::isPlayerInGame(const Player* player)const;

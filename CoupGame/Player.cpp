@@ -41,6 +41,11 @@ namespace CoupG {
 
     }
 
+    bool Player::isBlockArrest() const {
+        return blockArrest;
+    }
+
+
     //setter
     void Player::setCoins(const int amount) {
         //what if coins+amount==-num??
@@ -61,6 +66,10 @@ namespace CoupG {
         this->lastAction = action;
     }
 
+    void Player::setBlockArrest(const bool blockArrest) {
+        this->blockArrest = blockArrest;
+    }
+
     // Actions
     void Player::gather() {
         coins+=1;
@@ -73,13 +82,16 @@ namespace CoupG {
         coins-=4;
     }
     void Player::arrest(Player& p) {
+        if (this->isBlockArrest()) {
+            throw std::runtime_error("Block arrest not allowed");
+        }
         if (p.getCoins()<1) {
             throw std::runtime_error("Player coins < 1");
         }
         p.setCoins(-1);
         coins+=1;
-
     }
+
     void Player::sanction(Player& p) {
         if (coins<3) {
             throw std::runtime_error("Player coins < 3");

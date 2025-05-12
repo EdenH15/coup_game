@@ -4,6 +4,7 @@
 
 #ifndef PLAYER_H
 #define PLAYER_H
+#include <set>
 #include <string>
 #include "Roles/Role.h"
 #include "ActionType.h"
@@ -17,6 +18,7 @@ namespace CoupG {
         bool active;
         Role* role;
         bool underSanction;
+        bool blockArrest=false;
         int sanctionTurnsLeft = 0;
         int turnIndex;
         ActionType lastAction = ActionType::None;
@@ -34,6 +36,7 @@ namespace CoupG {
         int getSanctionTurnsLeft() const;
         bool isUnderSanction() const;
         ActionType getLastAction() const;
+        bool isBlockArrest() const;
 
         //setter
         void setCoins(int amount);
@@ -41,6 +44,7 @@ namespace CoupG {
         void setSanctionTurnsLeft(int turn);
         void setUnderSanction(bool underSanction);
         void setLastAction(ActionType action);
+        void setBlockArrest(bool blockArrest);
 
         // Actions
         void gather();

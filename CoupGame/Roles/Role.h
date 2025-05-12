@@ -14,10 +14,12 @@ namespace CoupG {
     public:
         virtual ~Role() = default;
         virtual std::string getName() const = 0;
-        virtual void useAbility(Player& self, Player& target) = 0;
+        virtual std::string useAbility(Player& self, Player& target) = 0;
         virtual int onTax() {return 2;}
         virtual void onBribe(Player& source) {}
         virtual void onArrest(Player& target) {}
+        virtual void onSanction(Player& target) {}
+
         virtual void onCoup(Player& target) {}
     };
 }

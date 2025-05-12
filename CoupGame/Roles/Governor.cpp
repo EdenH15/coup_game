@@ -16,12 +16,13 @@ namespace CoupG {
         return 3;
     }
 
-    void Governor::useAbility(Player& self, Player& target) {
+    std::string Governor::useAbility(Player& self, Player& target) {
         if (target.getLastAction()==ActionType::Tax) {
             target.setCoins(-target.getRole()->onTax());
             target.setLastAction(ActionType::None);
+            return self.getName() + " blocked " + target.getName() + "'s tax.";
         }
-        //TROHW
+        return "Cannot block: Last action was not tax.";
     }
 
 

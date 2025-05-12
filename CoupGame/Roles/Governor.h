@@ -12,7 +12,7 @@ namespace CoupG {
     class Governor final : public Role {
     public:
         std::string getName() const override;
-        void useAbility(Player& self, Player& target) override;
+        std::string useAbility(Player& self, Player& target) override;
         int onTax() override;
     };
 }

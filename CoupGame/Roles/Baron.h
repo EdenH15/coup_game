@@ -4,14 +4,14 @@
 
 #ifndef BARON_H
 #define BARON_H
-#include "Role.h"
+#include "../Player.h"
 
 namespace CoupG {
-    class Baron final : public Role {
+    class Baron final : public Player {
     public:
-        std::string getName() const override;
-        std::string useAbility(Player& self, Player& target) override;
-        void onSanction(Player& target) override;
+        Baron(Game& game, const std::string& name);
+        void useAbility();
+        void receiveSanctionBy(Player& p) override;
     };
 }
 

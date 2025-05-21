@@ -5,15 +5,15 @@
 #ifndef GOVERNOR_H
 #define GOVERNOR_H
 
-#include "Role.h"
+#include "../Player.h"
 #include <string>
 
 namespace CoupG {
-    class Governor final : public Role {
+    class Governor final : public Player {
     public:
-        std::string getName() const override;
-        std::string useAbility(Player& self, Player& target) override;
-        int onTax() override;
+        Governor(Game& game, const std::string& name);
+        void useAbility(Player& p) const;
+        void tax() override;
     };
 }
 

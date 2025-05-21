@@ -10,17 +10,24 @@
 
 namespace CoupG {
 
-    std::string Spy::getName() const {
-        return "Spy";
+    Spy::Spy(Game& game, const std::string& name)
+        : Player(game, name) {
+        role = "Spy";
     }
 
-    std::string Spy::useAbility(Player& self, Player& target) {
-        const int targetCoins=target.getCoins();
-        target.setBlockArrest(true);
-        std::cout << self.getName() + " blocked arrest & saw " + target.getName() + " has " + std::to_string(targetCoins) + " coins."<<std::endl;
-        return target.getName() + " has " + std::to_string(targetCoins) + " coins.";
-    }
+    int Spy::useAbility(Player& p) const {
+        if (!this->active) {
+            throw std::runtime_error("Inactive players can't use abilities.");
+        }
 
+        if (!p.getActive()) {
+            throw std::runtime_error("Target player is not active.");
+        }
+
+        p.setBlockArrest(true);
+
+        return p.getCoins();
+    }
 
 }
 

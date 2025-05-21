@@ -5,16 +5,17 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
-#include "Role.h"
+
+#include "../Player.h"
+#include <string>
 
 namespace CoupG {
-    class General final : public Role {
+    class General final : public Player {
     public:
-        std::string getName() const override;
-        std::string useAbility(Player& self, Player& target) override;
-        void onArrest(Player& target) override;
+        General(Game& game, const std::string& name);
+        void useAbility(Player& p);
+        void receiveArrestBy(Player& p) override;
     };
 }
-
 
 #endif //GENERAL_H

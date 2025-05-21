@@ -5,34 +5,60 @@
 #ifndef GAME_H
 #define GAME_H
 #include <vector>
-#include <stdexcept>
 #include "Player.h"
 
 namespace CoupG {
+    class Player;
+
     class Game {
     private:
-        std::vector<Player*> allPlayers;
-        int current_player{};
+        std::vector<Player *> allPlayers;
+        size_t current_player{};
         bool gameActive{};
         int numPlayers;
         std::string underArrest;
         std::string theWinner{};
 
-
     public:
         explicit Game(int numPlayers);
+
         ~Game();
+
+        void reset();
+
         void startGame();
+
         void endGame();
-        int getCurrentPlayer() const;
+
+        size_t getCurrentPlayer() const;
+        std::vector<Player *> getAllPlayers() const;
+        int getNumPlayers() const;
         std::string getUnderArrest() const;
-        void setUnderArrest(Player& p);
-        void nextTurn();
         std::string getWinner();
-        bool Game::isPlayerInGame(const Player* player)const;
-        void addPlayer(Player* player);
-        void returnPlayer(Player& player) const;
-        void removePlayer(Player& player) const;
+
+        bool isGameActive() const;
+        bool isPlayerInGame(const Player *player) const;
+        bool isCurrentPlayer(const Player *player) const;
+
+        void setUnderArrest(std::string name);
+
+        void nextTurn();
+
+        std::string turn() const;
+
+        std::vector<std::string> players();
+
+        void addPlayer(Player *player);
+
+        void returnPlayer(Player &player) const;
+
+        void removePlayer(Player &player) const;
+
+        void checkForWinner();
+
+        void validateTurnStart(const Player &p) const;
+
+        void manageNextTurn(Player &p);
     };
 }
 

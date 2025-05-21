@@ -4,55 +4,61 @@
 
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <set>
+
 #include <string>
-#include "Roles/Role.h"
 #include "ActionType.h"
+#include "Game.h"
+
 
 
 namespace CoupG {
+    class Game;
     class Player {
-    private:
+    protected:
         std::string name;
+        Game& game;
         int coins;
         bool active;
-        Role* role;
+        std::string role;
         bool underSanction;
-        bool blockArrest=false;
-        int sanctionTurnsLeft = 0;
-        int turnIndex;
+        bool blockArrest;
+        bool anotherTurn=false;
         ActionType lastAction = ActionType::None;
 
 
 
     public:
-        Player(const std::string& name, Role* role,int turnI);
+        Player(Game& game,const std::string& name);
+        virtual ~Player() = default;
 
         //getter
-        std::string getName();
-        int getCoins() const;
-        bool getActive() const;
-        Role* getRole() const;
-        int getSanctionTurnsLeft() const;
-        bool isUnderSanction() const;
-        ActionType getLastAction() const;
-        bool isBlockArrest() const;
+        virtual std::string getName();
+        virtual int getCoins() const;
+        virtual bool getActive() const;
+        virtual bool getAnotherTurn() const;
+        virtual std::string getRole() const;
+        virtual bool isUnderSanction() const;
+        virtual ActionType getLastAction() const;
+        virtual bool isBlockArrest() const;
 
         //setter
-        void setCoins(int amount);
-        void setActive(bool active);
-        void setSanctionTurnsLeft(int turn);
-        void setUnderSanction(bool underSanction);
-        void setLastAction(ActionType action);
-        void setBlockArrest(bool blockArrest);
+        virtual void setCoins(int amount);
+        virtual void setActive(bool active);
+        virtual void setUnderSanction(bool underSanction);
+        virtual void setLastAction(ActionType action);
+        virtual void setBlockArrest(bool blockArrest);
+        virtual void setAnotherTurn(bool anotherTurn);
 
         // Actions
-        void gather();
-        void tax();
-        void bribe();
-        void arrest(Player& p);
-        void sanction(Player& p);
-        void coup(Player& p);
+        virtual void gather();
+        virtual void tax();
+        virtual void bribe();
+        virtual void arrest(Player& p);
+        virtual void sanction(Player& p);
+        virtual void coup(Player& p);
+
+        virtual void receiveSanctionBy(Player& p);
+        virtual void receiveArrestBy(Player& p);
 
 
     };

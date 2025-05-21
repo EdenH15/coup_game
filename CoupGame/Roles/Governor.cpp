@@ -3,28 +3,31 @@
 //
 
 #include "Governor.h"
+#include <stdexcept>
 
 #include "../Player.h"
 
 namespace CoupG {
 
-    std::string Governor::getName() const {
-        return "Governor";
+    Governor::Governor(Game& game, const std::string& name)
+       : Player(game, name) {
+        role = "Governor";
     }
 
-    int Governor::onTax() {
-        return 3;
+    void Governor::tax() {
+        coins += 3;
+        game.nextTurn();
     }
 
-    std::string Governor::useAbility(Player& self, Player& target) {
-        if (target.getLastAction()==ActionType::Tax) {
-            target.setCoins(-target.getRole()->onTax());
-            target.setLastAction(ActionType::None);
-            return self.getName() + " blocked " + target.getName() + "'s tax.";
+    void Governor::useAbility(Player &p) const {
+        if (!this->active) {
+            throw std::runtime_error("Inactive players can't block.");
         }
-        return "Cannot block: Last action was not tax.";
+
+        if (p.getLastAction() != ActionType::Tax) {
+            throw std::runtime_error("Can only block a tax action.");
+        }
+
+        p.setCoins(p.getCoins()-2);
     }
-
-
-
 }

@@ -5,15 +5,15 @@
 #ifndef JUDGE_H
 #define JUDGE_H
 
-#include "Role.h"
+#include "../Player.h"
 
 namespace CoupG {
-    class Judge final : public Role {
+    class Judge final : public Player {
     public:
-        std::string getName() const override;
-        std::string useAbility(Player& self, Player& target) override;
-        void onSanction(Player& target) override;
+        Judge(Game& game, const std::string& name);
+
+        void useAbility(Player& p) const;
+        void receiveSanctionBy(Player& p) override; // נקרא כשהשופט מקבל סנקציה
     };
 }
-
 #endif //JUDGE_H

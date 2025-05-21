@@ -7,26 +7,30 @@
 #include "../Player.h"
 
 namespace CoupG {
-    std::string Merchant::getName() const {
-        return "Merchant";
+
+    Merchant::Merchant(Game& game, const std::string& name)
+    : Player(game, name) {
+        this->role = "Merchant";
     }
 
-    std::string Merchant::useAbility(Player &self, Player &target) {
-        (void)target;
-        if (self.getCoins() >= 3) {
-            self.setCoins(1);
-            std::cout << self.getName() + " started the turn with at least 3 coins and gained 1 bonus coin." <<
-                    std::endl;
-            return self.getName() + "gained 1 bonus coin.";
+    void Merchant::useAbility() {
+        if (this->getCoins() >= 3) {
+        this->coins+=1;
+        std::cout << this->getName() << " starts their turn with 3 or more coins, receiving 1 extra coin!" << std::endl;
+    }
+        std::cout << this->getName() << "you have less than 3 coins" << std::endl;
+    }
+
+    void Merchant::receiveArrestBy(Player& p) {
+        if (coins<1) {
+            throw std::runtime_error("2");
         }
-        std::cout << self.getName() + " has less than 3 coins. No bonus granted." << std::endl;
-        return self.getName() + "No bonus granted.";
-    }
-
-    void onArrest(Player &target) {
-        if (target.getLastAction() == ActionType::Arrest) {
-            target.setCoins(-2);
-            std::cout << target.getName() + " was arrested and paid " << std::endl;
+        if (this->getCoins() >= 2) {
+            this->setCoins(this->coins-2);
+            std::cout << this->getName() << " was arrested and paid 2 coins to the bank instead of to another player." << std::endl;
+        }
+        else {
+            this->setCoins(0);
         }
     }
 }

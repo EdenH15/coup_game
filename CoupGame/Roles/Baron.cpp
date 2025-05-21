@@ -2,31 +2,34 @@
 // Created by eden on 5/8/25.
 //
 #include "Baron.h"
-
 #include "../Player.h"
 #include <iostream>
+#include <string>
 
 namespace CoupG {
 
-    std::string Baron::getName() const {
-        return "Baron";
+    Baron::Baron(Game& game, const std::string& name)
+        : Player(game, name) {
+        role = "Baron";
     }
 
-    std::string Baron::useAbility(Player& self,Player& target) {
-        (void)target;
-        if (self.getCoins() < 3) {
-            return self.getName() + " does not have enough coins";
+
+    void Baron::useAbility() {
+        if (!this->active) {
+            throw std::runtime_error("Inactive player can't invest.");
         }
 
-        self.setCoins(-3);
-        self.setCoins(6);
+        if (this->coins < 3) {
+            throw std::runtime_error("Not enough coins to invest (need 3).");
+        }
 
-        return self.getName() + " invested 3 coins and received 6 coins!";
+        this->coins -= 3;
+        this->coins += 6;
     }
 
-    void Baron::onSanction(Player& target) override {
-        target.setCoins(1);
-        std::cout << target.getName() << " was sanctioned but received 1 coin compensation as Baron.\n";
+    void Baron::receiveSanctionBy(Player& p) {
+        this->underSanction = true;
+        this->coins += 1;
     }
 
 }

@@ -5,17 +5,17 @@
 #ifndef MERCHANT_H
 #define MERCHANT_H
 
-#include "Role.h"
+#include "../Player.h"
 
 namespace CoupG {
-    class Merchant final : public Role {
+    class Merchant final : public Player {
     public:
-        std::string getName() const override;
-        std::string useAbility(Player& self, Player& target) override;
-        void onArrest(Player& target) override;
+        Merchant(Game& game, const std::string& name);
+
+        void useAbility();
+        void receiveArrestBy(Player& p) override;
     };
 }
-
 
 
 #endif //MERCHANT_H

@@ -7,21 +7,29 @@
 
 namespace CoupG {
 
-    std::string Judge::getName()const {
-        return "Judge";
+    Judge::Judge(Game& game, const std::string& name)
+        : Player(game, name) {
+        this->role = "Judge";
     }
 
-    std::string useAbility(Player& self, Player& target) {
-        if (target.getLastAction()==ActionType::Bribe) {
-            return self.getName() + " canceled " + target.getName() + "bribe.";
+    void Judge::useAbility(Player& p) const {
+        if (!this->active) {
+            throw std::runtime_error("Inactive player can't invest.");
         }
-        return "Cannot canceled " + target.getName() + " last action was not a bribe.";
+        if (p.getLastAction()==ActionType::Bribe) {
+            throw std::invalid_argument("Judge can only undo bribe actions.");
+        }
+        p.setAnotherTurn(false);
+        p.setLastAction(ActionType::None);
     }
 
-    void onSanction(Player& target) {
-        target.setCoins(-1);
-        std::cout << target.getName() + " sanctioned a Judge and paid 1 extra coin." << std::endl;
-
+    void Judge::receiveSanctionBy(Player& p) {
+        Player::receiveSanctionBy(p);
+        if (p.getCoins() > 0) {
+            p.setCoins( p.getCoins()-1);
+        } else {
+            std::cout << p.getName() << " had no coin to pay as penalty for sanctioning Judge.\n";
+        }
     }
 
 }

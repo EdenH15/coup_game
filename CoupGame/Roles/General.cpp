@@ -8,19 +8,26 @@
 
 namespace CoupG {
 
-    std::string General::useAbility(Player& self, Player& target) {
-        if (self.getCoins() < 5) {
-            return self.getName() + " does not have enough coins to prevent a coup.";
-        }
-        self.setCoins(-5);
-        target.setActive(true);
-        std::cout << self.getName() + " blocked a coup and lost 5 coins." << std::endl;
-        return self.getName() + " blocked a coup and lost 5 coins.";
+    General::General(Game& game, const std::string& name)
+       : Player(game, name) {
+        role = "General";
     }
 
-    void General::onArrest(Player& target) {
-        target.setCoins(1);
-        std::cout << target.getName() + " was arrested but got 1 coin back." << std::endl;
+    void General::useAbility(Player& p) {
+        if (!this->getActive()) {
+            throw std::runtime_error("Inactive general cannot block.");
+        }
+
+        if (this->getCoins() < 5) {
+            throw std::runtime_error("2");
+        }
+
+        coins-=5;
+        p.setActive(true);
+    }
+
+    void General::receiveArrestBy(Player& p) {
+        p.setCoins(p.getCoins()+1);
     }
 
 }

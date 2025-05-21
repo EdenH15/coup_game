@@ -13,8 +13,12 @@ namespace CoupG {
         Bribe,
         Arrest,
         Sanction,
-        Coup
+        Coup,
+        Invest,
+        Spy
     };
+
+
 }
 
 #endif //ACTION_TYPE_H

@@ -15,7 +15,7 @@ namespace CoupG {
         role = "Spy";
     }
 
-    int Spy::useAbility(Player& p) const {
+    int Spy::useSpyAbility(Player& p)  {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't use abilities.");
         }

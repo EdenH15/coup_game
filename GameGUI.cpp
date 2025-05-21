@@ -172,13 +172,12 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
 
     std::vector<std::string> actions = {"gather", "tax", "bribe", "arrest", "sanction", "coup"};
 
-    bool isSpy = (dynamic_cast<Spy *>(&player) != nullptr);
-    bool isBaron = (dynamic_cast<Baron *>(&player) != nullptr);
-
-    if (isSpy) {
+    // אם ל-Player יש ability לשימוש, מוסיפים אותו לפי פולימורפיזם
+    // בלי dynamic_cast - נבדוק לפי getRole() או לפי useAbility ו-useSpyAbility
+    if (player.getRole() == "Spy") {
         actions.push_back("use spy ability");
     }
-    if (isBaron) {
+    if (player.getRole() == "Baron") {
         actions.push_back("Invest");
     }
 
@@ -203,51 +202,48 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
     while (!selected && window.isOpen()) {
         sf::Event event;
         try {
-        game.validateTurnStart(player);
-    } catch (const std::runtime_error &e) {
-        std::string msg = e.what();
-        if (msg == "Player is not active") {
-            showMessageToPlayer("Player is not active");
-        } else if (msg == "Not your turn") {
-            showMessageToPlayer("Not your turn");
-        } else if (msg == "Player must perform coup with 10 or more coins") {
-            showMessageToPlayer("You must perform a coup!");
+            game.validateTurnStart(player);
+        } catch (const std::runtime_error &e) {
+            std::string msg = e.what();
+            if (msg == "Player is not active") {
+                showMessageToPlayer("Player is not active");
+            } else if (msg == "Not your turn") {
+                showMessageToPlayer("Not your turn");
+            } else if (msg == "Player must perform coup with 10 or more coins") {
+                showMessageToPlayer("You must perform a coup!");
 
-            std::vector<Player *> targets;
-            for (Player *p : game.getAllPlayers()) {
-                if (p != &player && p->getActive()) {
-                    targets.push_back(p);
+                std::vector<Player *> targets;
+                for (Player *p : game.getAllPlayers()) {
+                    if (p != &player && p->getActive()) {
+                        targets.push_back(p);
+                    }
                 }
-            }
 
-            Player *target = chooseTargetPlayer(window, targets, font);
-            if (target) {
-                try {
-                    player.coup(*target);
+                Player *target = chooseTargetPlayer(window, targets, font);
+                if (target) {
+                    try {
+                        player.coup(*target);
 
-                    // בדיקה האם גנרל מונע את המהלך
-                    for (Player *p : game.getAllPlayers()) {
-                        if (p->getActive() && p != &player) {
-                            if (General *gen = dynamic_cast<General *>(p)) {
+                        for (Player *p : game.getAllPlayers()) {
+                            if (p->getActive() && p != &player && p->getRole() == "General") {
                                 bool cancelCoup = showYesNoPopup(window, font,
-                                    gen->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
+                                    p->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
                                 if (cancelCoup) {
-                                    gen->useAbility(*target);
-                                    showMessageToPlayer("Coup was prevented by " + gen->getName());
+                                    p->useAbility(*target);
+                                    showMessageToPlayer("Coup was prevented by " + p->getName());
                                     break;
                                 }
                             }
                         }
+                    } catch (std::runtime_error &err) {
+                        showMessageToPlayer("Coup failed: " + std::string(err.what()));
                     }
-                } catch (std::runtime_error &err) {
-                    showMessageToPlayer("Coup failed: " + std::string(err.what()));
                 }
-            }
 
+                return;
+            }
             return;
         }
-        return;
-    }
 
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -262,6 +258,7 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                     int index = (mouseX - static_cast<int>(menuPosition.x + 10)) / 120;
                     if (index >= 0 && index < actions.size()) {
                         std::string choice = actions[index];
+
                         if (choice == "gather") {
                             try {
                                 player.gather();
@@ -277,15 +274,13 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                             }
 
                             for (Player *p : game.getAllPlayers()) {
-                                if (p->getActive() && p != &player) {
-                                    if (Governor *gov = dynamic_cast<Governor *>(p)) {
-                                        bool cancelTax = showYesNoPopup(window, font,
-                                            gov->getName() + ", do you want to block the Tax from " + player.getName() + "?");
-                                        if (cancelTax) {
-                                            gov->useAbility(player);
-                                            showMessageToPlayer("Tax was blocked by " + gov->getName());
-                                            break;
-                                        }
+                                if (p->getActive() && p != &player && p->getRole() == "Governor") {
+                                    bool cancelTax = showYesNoPopup(window, font,
+                                        p->getName() + ", do you want to block the Tax from " + player.getName() + "?");
+                                    if (cancelTax) {
+                                        p->useAbility(player);
+                                        showMessageToPlayer("Tax was blocked by " + p->getName());
+                                        break;
                                     }
                                 }
                             }
@@ -293,15 +288,13 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                         } else if (choice == "bribe") {
                             player.bribe();
                             for (Player *p : game.getAllPlayers()) {
-                                if (p->getActive() && p != &player) {
-                                    if (Judge *jud = dynamic_cast<Judge *>(p)) {
-                                        bool cancelTax = showYesNoPopup(window, font,
-                                            jud->getName() + ", do you want to block the bribe from " + player.getName() + "?");
-                                        if (cancelTax) {
-                                            jud->useAbility(player);
-                                            showMessageToPlayer("bribe was blocked by " + jud->getName());
-                                            break;
-                                        }
+                                if (p->getActive() && p != &player && p->getRole() == "Judge") {
+                                    bool cancelBribe = showYesNoPopup(window, font,
+                                        p->getName() + ", do you want to block the bribe from " + player.getName() + "?");
+                                    if (cancelBribe) {
+                                        p->useAbility(player);
+                                        showMessageToPlayer("Bribe was blocked by " + p->getName());
+                                        break;
                                     }
                                 }
                             }
@@ -319,64 +312,54 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                                     try {
                                         player.arrest(*target);
                                     } catch (const std::runtime_error &e) {
-                                        std::string msg=e.what();
+                                        std::string msg = e.what();
                                         if (msg == "1") {
-
                                             showMessageToPlayer("You are under a block arrest");
-                                        }
-                                        else if (msg == "2") {
-                                                showMessageToPlayer(target->getName()+" doesn't have enough money");
-                                            }
-                                        else if (msg == "3"){
-                                            showMessageToPlayer(target->getName()+" can't be arrested again");
+                                        } else if (msg == "2") {
+                                            showMessageToPlayer(target->getName() + " doesn't have enough money");
+                                        } else if (msg == "3") {
+                                            showMessageToPlayer(target->getName() + " can't be arrested again");
                                         }
                                     }
                                 } else if (choice == "sanction") {
                                     try {
                                         player.sanction(*target);
+                                    } catch (std::runtime_error &e) {
+                                        showMessageToPlayer("You don't have enough money to sanction.");
                                     }
-                                    catch (std::runtime_error &e) {
-                                        showMessageToPlayer("You don't have enough money to sunction.");
-                                    }
-
                                 } else if (choice == "coup") {
                                     try {
                                         player.coup(*target);
+
                                         for (Player *p : game.getAllPlayers()) {
-                                            if (p->getActive() && p != &player) {
-                                                if (General *gen = dynamic_cast<General *>(p)) {
-                                                    bool cancelTax = showYesNoPopup(window, font,
-                                                        gen->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
-                                                    if (cancelTax) {
-                                                        try {
-                                                            gen->useAbility(*target);
-                                                            showMessageToPlayer("coup was prevent by " + gen->getName());
-                                                            break;
-                                                        }
-                                                        catch (std::runtime_error &e) {
-                                                            showMessageToPlayer("You don't have enough money to prevent coup");
-                                                        }
+                                            if (p->getActive() && p != &player && p->getRole() == "General") {
+                                                bool cancelCoup = showYesNoPopup(window, font,
+                                                    p->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
+                                                if (cancelCoup) {
+                                                    try {
+                                                        p->useAbility(*target);
+                                                        showMessageToPlayer("Coup was prevented by " + p->getName());
+                                                        break;
+                                                    } catch (std::runtime_error &e) {
+                                                        showMessageToPlayer("You don't have enough money to prevent coup");
                                                     }
                                                 }
                                             }
                                         }
-                                    }
-                                    catch (std::runtime_error &e) {
+                                    } catch (std::runtime_error &e) {
                                         showMessageToPlayer("You don't have enough money to coup.");
-
                                     }
-
                                 }
                             }
 
-                        } else if (choice == "Invest") {
+                        } else if (choice == "Invest" && player.getRole() == "Baron") {
                             try {
-                                dynamic_cast<Baron &>(player).useAbility();
+                                player.useAbility(); // כבר פולימורפי
                             } catch (const std::runtime_error &e) {
                                 showMessageToPlayer("You don't have enough money to invest.");
                             }
 
-                        } else if (choice == "use spy ability" && isSpy) {
+                        } else if (choice == "use spy ability" && player.getRole() == "Spy") {
                             std::vector<Player *> targets;
                             for (Player *p : game.getAllPlayers()) {
                                 if (p != &player && p->getActive()) {
@@ -385,9 +368,8 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                             }
                             Player *target = chooseTargetPlayer(window, targets, font);
                             if (target) {
-                                int coins = dynamic_cast<Spy &>(player).useAbility(*target);
+                                int coins = player.useSpyAbility(*target);
                                 showMessageToPlayer("Target has " + std::to_string(coins) + " coins");
-
 
                                 window.draw(menuBox);
                                 for (auto &option : menuOptions) window.draw(option);
@@ -397,9 +379,7 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                         }
 
                         selected = true;
-
                     }
-
                 }
             }
         }
@@ -676,4 +656,10 @@ void GameGUI::render() {
     }
 
     window.display();
+}
+
+int main() {
+    CoupG::GameGUI gui(4);
+    gui.run();
+    return 0;
 }

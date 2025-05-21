@@ -13,7 +13,7 @@ namespace CoupG {
         this->role = "Merchant";
     }
 
-    void Merchant::useAbility() {
+    void Merchant::useAbility()  {
         if (this->getCoins() >= 3) {
         this->coins+=1;
         std::cout << this->getName() << " starts their turn with 3 or more coins, receiving 1 extra coin!" << std::endl;

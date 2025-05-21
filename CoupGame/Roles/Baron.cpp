@@ -14,7 +14,7 @@ namespace CoupG {
     }
 
 
-    void Baron::useAbility() {
+    void Baron::useAbility()  {
         if (!this->active) {
             throw std::runtime_error("Inactive player can't invest.");
         }

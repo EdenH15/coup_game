@@ -12,7 +12,7 @@ namespace CoupG {
         this->role = "Judge";
     }
 
-    void Judge::useAbility(Player& p) const {
+    void Judge::useAbility(Player& p)  {
         if (!this->active) {
             throw std::runtime_error("Inactive player can't invest.");
         }

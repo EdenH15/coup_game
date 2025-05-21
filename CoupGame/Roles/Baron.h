@@ -10,7 +10,7 @@ namespace CoupG {
     class Baron final : public Player {
     public:
         Baron(Game& game, const std::string& name);
-        void useAbility();
+        void useAbility() override;
         void receiveSanctionBy(Player& p) override;
     };
 }

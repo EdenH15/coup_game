@@ -12,7 +12,7 @@ namespace CoupG {
     public:
         Merchant(Game& game, const std::string& name);
 
-        void useAbility();
+        void useAbility() override;
         void receiveArrestBy(Player& p) override;
     };
 }

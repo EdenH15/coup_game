@@ -11,7 +11,8 @@ namespace CoupG {
     class Spy final : public Player {
     public:
         Spy(Game& game, const std::string& name);
-        int useAbility(Player& p) const;
+        int useSpyAbility(Player& p) override;
+
     };
 }
 

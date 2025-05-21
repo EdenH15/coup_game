@@ -13,7 +13,7 @@ namespace CoupG {
         role = "General";
     }
 
-    void General::useAbility(Player& p) {
+    void General::useAbility(Player& p)  {
         if (!this->getActive()) {
             throw std::runtime_error("Inactive general cannot block.");
         }

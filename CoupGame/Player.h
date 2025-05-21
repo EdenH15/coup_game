@@ -59,7 +59,9 @@ namespace CoupG {
 
         virtual void receiveSanctionBy(Player& p);
         virtual void receiveArrestBy(Player& p);
-
+        virtual void useAbility(){}
+        virtual void useAbility(Player& target){}
+        virtual int useSpyAbility(Player& target){return -1;}
 
     };
 }

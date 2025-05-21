@@ -21,8 +21,8 @@ namespace CoupG {
 
         Player* PlayerFactory::createRandomPlayer(Game& game, const std::string& name) {
             std::srand(std::time(nullptr)); // seed for randomness
-            std::vector<std::string> roles = {"BARON", "SPY", "GENERAL", "GOVERNOR", "MERCHANT", "JUDGE"};
-            int i = std::rand() % roles.size();
+            const std::vector<std::string> roles = {"BARON", "SPY", "GENERAL", "GOVERNOR", "MERCHANT", "JUDGE"};
+            const int i = std::rand() % roles.size();
             const std::string& role = roles[i];
 
             if (role == "BARON") return new Baron(game, name);

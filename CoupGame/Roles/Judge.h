@@ -12,7 +12,7 @@ namespace CoupG {
     public:
         Judge(Game& game, const std::string& name);
 
-        void useAbility(Player& p) const;
+        void useAbility(Player& p) override;
         void receiveSanctionBy(Player& p) override; // נקרא כשהשופט מקבל סנקציה
     };
 }

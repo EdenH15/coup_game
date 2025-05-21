@@ -19,7 +19,7 @@ namespace CoupG {
         game.nextTurn();
     }
 
-    void Governor::useAbility(Player &p) const {
+    void Governor::useAbility(Player &p)  {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't block.");
         }

@@ -159,21 +159,20 @@ void GameGUI::handleEvents() {
 
 void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &player) {
     sf::Font font;
-    font.loadFromFile("arial.ttf");
+    if (!font.loadFromFile("arial.ttf")) {
+        // טיפול במקרה שהפונט לא נטען
+        std::cerr << "Failed to load font arial.ttf" << std::endl;
+        return;
+    }
 
-    float margin = 10;
-    float menuWidth = window.getSize().x - 2 * margin;
-    float menuHeight = 50;
-    sf::Vector2f menuPosition(margin, margin);
-
-    sf::RectangleShape menuBox(sf::Vector2f(menuWidth, menuHeight));
-    menuBox.setFillColor(sf::Color(200, 100, 100));
-    menuBox.setPosition(menuPosition);
+    float margin = 10.f;
+    float buttonWidth = 140.f;
+    float buttonHeight = 40.f;
+    float menuX = margin;
+    float menuY = 100.f; // מתחילים מלמעלה, מתחת לכותרת
+    float buttonSpacing = 10.f;
 
     std::vector<std::string> actions = {"gather", "tax", "bribe", "arrest", "sanction", "coup"};
-
-    // אם ל-Player יש ability לשימוש, מוסיפים אותו לפי פולימורפיזם
-    // בלי dynamic_cast - נבדוק לפי getRole() או לפי useAbility ו-useSpyAbility
     if (player.getRole() == "Spy") {
         actions.push_back("use spy ability");
     }
@@ -181,26 +180,60 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
         actions.push_back("Invest");
     }
 
-    std::vector<sf::Text> menuOptions;
-    for (size_t i = 0; i < actions.size(); i++) {
-        sf::Text option;
-        option.setFont(font);
-        option.setCharacterSize(16);
-        option.setFillColor(sf::Color::Black);
-        option.setString(actions[i]);
-        option.setPosition(menuPosition.x + 10 + i * 120, menuPosition.y + 10);
-        menuOptions.push_back(option);
+    // צבעים בגווני זהב וחום
+    sf::Color goldColor(218, 165, 32);
+    sf::Color brownColor(94, 63, 36);
+    sf::Color goldHighlight(255, 215, 0);
+
+    // יצירת תיבת תפריט כללית (menuBox) שתהיה רקע אחיד שמאחורי הכפתורים
+    sf::RectangleShape menuBox(sf::Vector2f(buttonWidth + 2 * margin, (buttonHeight + buttonSpacing) * actions.size() - buttonSpacing + 2 * margin));
+    menuBox.setPosition(menuX - margin, menuY - margin);
+    menuBox.setFillColor(sf::Color(50, 30, 10, 230)); // חצי שקוף חום כהה
+    menuBox.setOutlineThickness(2);
+    menuBox.setOutlineColor(goldColor);
+
+    // יצירת כפתורים וטקסטים
+    std::vector<sf::RectangleShape> buttons;
+    std::vector<sf::Text> buttonTexts;
+
+    for (size_t i = 0; i < actions.size(); ++i) {
+        sf::RectangleShape button(sf::Vector2f(buttonWidth, buttonHeight));
+        button.setPosition(menuX, menuY + i * (buttonHeight + buttonSpacing));
+        button.setFillColor(brownColor);
+        button.setOutlineThickness(3);
+        button.setOutlineColor(goldColor);
+        buttons.push_back(button);
+
+        sf::Text text;
+        text.setFont(font);
+        text.setString(actions[i]);
+        text.setCharacterSize(18);
+        text.setFillColor(goldHighlight);
+
+        sf::FloatRect textBounds = text.getLocalBounds();
+        text.setOrigin(textBounds.left + textBounds.width / 2, textBounds.top + textBounds.height / 2);
+        text.setPosition(menuX + buttonWidth / 2, menuY + i * (buttonHeight + buttonSpacing) + buttonHeight / 2);
+        buttonTexts.push_back(text);
     }
 
+    window.clear();
+    renderGameBoard();
+
+    // מציירים את תיבת התפריט והרכיבים
     window.draw(menuBox);
-    for (auto &option : menuOptions) {
-        window.draw(option);
+    for (size_t i = 0; i < buttons.size(); ++i) {
+        window.draw(buttons[i]);
+        window.draw(buttonTexts[i]);
     }
     window.display();
 
     bool selected = false;
+
+    // לולאת אירועים
     while (!selected && window.isOpen()) {
         sf::Event event;
+
+        // בודקים תקינות תור
         try {
             game.validateTurnStart(player);
         } catch (const std::runtime_error &e) {
@@ -250,26 +283,25 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                 window.close();
             }
 
-            if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                 int mouseX = event.mouseButton.x;
                 int mouseY = event.mouseButton.y;
 
-                if (mouseY >= menuPosition.y + 10 && mouseY <= menuPosition.y + 40) {
-                    int index = (mouseX - static_cast<int>(menuPosition.x + 10)) / 120;
-                    if (index >= 0 && index < actions.size()) {
-                        std::string choice = actions[index];
+                for (size_t i = 0; i < buttons.size(); ++i) {
+                    if (buttons[i].getGlobalBounds().contains(static_cast<float>(mouseX), static_cast<float>(mouseY))) {
+                        std::string choice = actions[i];
 
                         if (choice == "gather") {
                             try {
                                 player.gather();
-                            } catch (const std::runtime_error &e) {
+                            } catch (const std::runtime_error &) {
                                 showMessageToPlayer("You are under a sanction.");
                             }
 
                         } else if (choice == "tax") {
                             try {
                                 player.tax();
-                            } catch (const std::runtime_error &e) {
+                            } catch (const std::runtime_error &) {
                                 showMessageToPlayer("You are under a sanction.");
                             }
 
@@ -324,7 +356,7 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                                 } else if (choice == "sanction") {
                                     try {
                                         player.sanction(*target);
-                                    } catch (std::runtime_error &e) {
+                                    } catch (std::runtime_error &) {
                                         showMessageToPlayer("You don't have enough money to sanction.");
                                     }
                                 } else if (choice == "coup") {
@@ -340,13 +372,13 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                                                         p->useAbility(*target);
                                                         showMessageToPlayer("Coup was prevented by " + p->getName());
                                                         break;
-                                                    } catch (std::runtime_error &e) {
+                                                    } catch (std::runtime_error &) {
                                                         showMessageToPlayer("You don't have enough money to prevent coup");
                                                     }
                                                 }
                                             }
                                         }
-                                    } catch (std::runtime_error &e) {
+                                    } catch (std::runtime_error &) {
                                         showMessageToPlayer("You don't have enough money to coup.");
                                     }
                                 }
@@ -354,8 +386,8 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
 
                         } else if (choice == "Invest" && player.getRole() == "Baron") {
                             try {
-                                player.useAbility(); // כבר פולימורפי
-                            } catch (const std::runtime_error &e) {
+                                player.useAbility();
+                            } catch (const std::runtime_error &) {
                                 showMessageToPlayer("You don't have enough money to invest.");
                             }
 
@@ -371,14 +403,39 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
                                 int coins = player.useSpyAbility(*target);
                                 showMessageToPlayer("Target has " + std::to_string(coins) + " coins");
 
+                                // הדגמה של חלון קטן עם ההודעה
+                                sf::RectangleShape infoBox(sf::Vector2f(300.f, 100.f));
+                                infoBox.setFillColor(sf::Color(50, 30, 10, 230));
+                                infoBox.setOutlineThickness(2);
+                                infoBox.setOutlineColor(goldColor);
+                                infoBox.setPosition((window.getSize().x - 300) / 2.f, (window.getSize().y - 100) / 2.f);
+
+                                sf::Text infoText;
+                                infoText.setFont(font);
+                                infoText.setString("Target has " + std::to_string(coins) + " coins");
+                                infoText.setCharacterSize(20);
+                                infoText.setFillColor(goldHighlight);
+                                sf::FloatRect bounds = infoText.getLocalBounds();
+                                infoText.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+                                infoText.setPosition(infoBox.getPosition().x + 150.f, infoBox.getPosition().y + 50.f);
+
+                                window.clear();
+                                renderGameBoard();
                                 window.draw(menuBox);
-                                for (auto &option : menuOptions) window.draw(option);
+                                for (size_t j = 0; j < buttons.size(); ++j) {
+                                    window.draw(buttons[j]);
+                                    window.draw(buttonTexts[j]);
+                                }
+                                window.draw(infoBox);
+                                window.draw(infoText);
                                 window.display();
-                                sleep(sf::seconds(2));
+
+                                sf::sleep(sf::seconds(2)); // מציגים את ההודעה 2 שניות
                             }
                         }
 
                         selected = true;
+                        break;
                     }
                 }
             }
@@ -492,8 +549,12 @@ bool GameGUI::showYesNoPopup(sf::RenderWindow &window, sf::Font &font, const std
 
 
 Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player *> players, sf::Font &font) {
+    // צבעים בגווני זהב וחום:
+    // זהב: (212, 175, 55)
+    // חום כהה: (101, 67, 33)
+
     sf::RectangleShape menuBox(sf::Vector2f(250, 30 * players.size()));
-    menuBox.setFillColor(sf::Color(200, 100, 100));
+    menuBox.setFillColor(sf::Color(212, 175, 55));  // זהב
     menuBox.setPosition(500, 100);
 
     std::vector<sf::Text> playerOptions;
@@ -501,7 +562,7 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
         sf::Text txt;
         txt.setFont(font);
         txt.setCharacterSize(16);
-        txt.setFillColor(sf::Color::Black);
+        txt.setFillColor(sf::Color(101, 67, 33));  // חום כהה
         txt.setString(players[i]->getName());
         txt.setPosition(510, 100 + i * 30);
         playerOptions.push_back(txt);
@@ -529,6 +590,7 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
     return nullptr;
 }
 
+
 void GameGUI::renderGameBoard() {
     const float windowWidth = 1000;
     const float windowHeight = 600;
@@ -547,8 +609,40 @@ void GameGUI::renderGameBoard() {
     currentTurnText.setString("Current Turn: " + players[curr]->getName());
     sf::FloatRect textBounds = currentTurnText.getLocalBounds();
     currentTurnText.setOrigin(textBounds.width / 2, textBounds.height / 2);
-    currentTurnText.setPosition(centerX, 30);
+    currentTurnText.setPosition(centerX+300, 30);
     window.draw(currentTurnText);
+
+    // שולחן עגול עם הצללה וטקסט
+    sf::CircleShape tableShadow(radius - 30);  // צללה טיפה יותר גדולה
+    tableShadow.setFillColor(sf::Color(30, 30, 30, 150));  // אפור כהה עם שקיפות
+    tableShadow.setOrigin(tableShadow.getRadius(), tableShadow.getRadius());
+    tableShadow.setPosition(centerX + 5, centerY + 5);  // מעט מוזז למטה-ימינה
+    window.draw(tableShadow);
+
+    sf::CircleShape table(radius + 60); // טיפה יותר גדול
+    table.setFillColor(sf::Color(94, 63, 36, 100)); // חום כהה עם שקיפות (100 מתוך 255)
+    table.setOutlineColor(sf::Color(218, 165, 32, 150)); // זהב עם שקיפות 150
+    table.setOutlineThickness(6);
+    table.setOrigin(table.getRadius(), table.getRadius());
+    table.setPosition(centerX, centerY);
+    window.draw(table);
+
+
+    // טקסט במרכז השולחן
+    sf::Text tableText;
+    tableText.setFont(font);
+    tableText.setCharacterSize(28);
+    tableText.setStyle(sf::Text::Bold | sf::Text::Italic);
+    tableText.setFillColor(sf::Color(255, 215, 0,100)); // זהב נוצץ
+    tableText.setString("COUP TABLE");
+    sf::FloatRect tableTextBounds = tableText.getLocalBounds();
+    tableText.setOrigin(tableTextBounds.width / 2, tableTextBounds.height / 2);
+    tableText.setPosition(centerX, centerY - 10);
+    window.draw(tableText);
+
+    sf::Color activePlayerColor(0, 168, 232);     // טורקיז כחול יפה
+    sf::Color inactivePlayerColor(120, 120, 120); // אפור מעודן
+
 
     for (int i = 0; i < n; ++i) {
         float angle = 2 * M_PI * i / n;
@@ -559,7 +653,7 @@ void GameGUI::renderGameBoard() {
         sf::CircleShape circle(30);
         circle.setPosition(x - 30, y - 30);
         sf::Color softGreen(100, 200, 100);
-        circle.setFillColor(players[i]->getActive() ? softGreen : sf::Color::Red);
+        circle.setFillColor(players[i]->getActive() ? activePlayerColor : inactivePlayerColor);
         window.draw(circle);
 
         // עיגול צהוב לשחקן הנוכחי
@@ -568,8 +662,9 @@ void GameGUI::renderGameBoard() {
             outline.setPosition(x - 34, y - 34);
             outline.setFillColor(sf::Color::Transparent);
             outline.setOutlineThickness(4);
-            outline.setOutlineColor(sf::Color(200, 100, 100));
+            outline.setOutlineColor(sf::Color(255, 215, 0)); // ורוד זוהר / סגול
             window.draw(outline);
+
         }
 
         // שם
@@ -598,7 +693,7 @@ void GameGUI::renderGameBoard() {
         sf::Text coinsText;
         coinsText.setFont(font);
         coinsText.setCharacterSize(15);
-        coinsText.setFillColor(sf::Color(200, 100, 100));
+        coinsText.setFillColor(sf::Color::White);
         coinsText.setString("Coins: " + std::to_string(players[i]->getCoins()));
         sf::FloatRect coinBounds = coinsText.getLocalBounds();
         coinsText.setOrigin(coinBounds.width / 2, 0);

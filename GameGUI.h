@@ -14,6 +14,14 @@ namespace CoupG {
         void run();
 
     private:
+        int numPlayers = 0;
+        bool playersSelected = false;
+        std::vector<sf::Text> playerCountOptions;
+        sf::RectangleShape dropdownBox;
+        bool dropdownVisible = false;
+        sf::Text selectedPlayerCountText;
+
+
         sf::RenderWindow window;
         sf::Font font;
 

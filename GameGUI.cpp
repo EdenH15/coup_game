@@ -3,6 +3,7 @@
 #include <cmath>
 #include <SFML/System.hpp>
 #include "CoupGame/Roles/Baron.h"
+#include "CoupGame/ActionType.h"
 #include "CoupGame/Roles/General.h"
 #include "CoupGame/Roles/Spy.h"
 #include "CoupGame/Roles/Governor.h"
@@ -28,13 +29,18 @@ GameGUI::GameGUI(const int numPlayers)
 
     // Start Button
     startButton.setSize(sf::Vector2f(200, 50));
-    startButton.setFillColor(sf::Color(200, 100, 100));
+    sf::Color goldColor(218, 165, 32);
+    sf::Color brownColor(94, 63, 36);
+    sf::Color goldHighlight(255, 215, 0);
+    startButton.setFillColor(brownColor);
+    startButton.setOutlineThickness(3);
+    startButton.setOutlineColor(goldColor);
     startButton.setPosition((windowWidth - startButton.getSize().x) / 2, 200);
 
     startText.setFont(font);
     startText.setString("START GAME");
     startText.setCharacterSize(24);
-    startText.setFillColor(sf::Color::White);
+    startText.setFillColor(goldHighlight);
     sf::FloatRect startTextBounds = startText.getLocalBounds();
     startText.setOrigin(startTextBounds.width / 2, startTextBounds.height / 2);
     startText.setPosition(windowWidth / 2, 210 + 10); // +10 ליישור אנכי בתוך הכפתור
@@ -51,26 +57,30 @@ GameGUI::GameGUI(const int numPlayers)
 
     // Add Player Button
     addPlayerButton.setSize(sf::Vector2f(150, 40));
-    addPlayerButton.setFillColor(sf::Color(200, 100, 100));
+    addPlayerButton.setFillColor(brownColor);
+    addPlayerButton.setOutlineThickness(3);
+    addPlayerButton.setOutlineColor(goldColor);
     addPlayerButton.setPosition((windowWidth - addPlayerButton.getSize().x) / 2, 360);
 
     addPlayerText.setFont(font);
     addPlayerText.setString("Add Player");
     addPlayerText.setCharacterSize(20);
-    addPlayerText.setFillColor(sf::Color::Black);
+    addPlayerText.setFillColor(goldHighlight);
     sf::FloatRect addPlayerTextBounds = addPlayerText.getLocalBounds();
     addPlayerText.setOrigin(addPlayerTextBounds.width / 2, addPlayerTextBounds.height / 2);
     addPlayerText.setPosition(windowWidth / 2, 368 + 8); // יישור אנכי בתוך הכפתור
 
     // Next Button
     nextButton.setSize(sf::Vector2f(200, 50));
-    nextButton.setFillColor(sf::Color(200, 100, 100));
+    nextButton.setFillColor(brownColor);
+    nextButton.setOutlineThickness(3);
+    nextButton.setOutlineColor(goldColor);
     nextButton.setPosition((windowWidth - nextButton.getSize().x) / 2, 540);
 
     nextButtonText.setFont(font);
     nextButtonText.setString("Next To The Game");
     nextButtonText.setCharacterSize(22);
-    nextButtonText.setFillColor(sf::Color::White);
+    nextButtonText.setFillColor(goldHighlight);
     sf::FloatRect nextTextBounds = nextButtonText.getLocalBounds();
     nextButtonText.setOrigin(nextTextBounds.width / 2, nextTextBounds.height / 2);
     nextButtonText.setPosition(windowWidth / 2, 550 + 10);
@@ -130,7 +140,12 @@ void GameGUI::handleEvents() {
             if (addPlayerButton.getGlobalBounds().contains(mousePos)) {
                 if (!playerNameInput.empty()) {
                     Player *p = PlayerFactory::createRandomPlayer(game, playerNameInput);
-                    game.addPlayer(p);
+                    try {
+                        game.addPlayer(p);
+                    }
+                    catch (const std::exception& e) {
+                        delete p;
+                    }
 
                     sf::Text newPlayerText;
                     newPlayerText.setFont(font);
@@ -590,6 +605,21 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
     return nullptr;
 }
 
+std::string actionTypeToString(CoupG::ActionType action) {
+    switch (action) {
+        case ActionType::None: return "None";
+        case ActionType::Gather: return "Gather";
+        case ActionType::Tax: return "Tax";
+        case ActionType::Bribe: return "Bribe";
+        case ActionType::Arrest: return "Arrest";
+        case ActionType::Sanction: return "Sanction";
+        case ActionType::Coup: return "Coup";
+        case ActionType::Invest: return "Invest";
+        case ActionType::Spy: return "Spy";
+        case ActionType::UndoTax: return "UndoTax";
+        default: return "Unknown";
+    }
+}
 
 void GameGUI::renderGameBoard() {
     const float windowWidth = 1000;
@@ -689,12 +719,28 @@ void GameGUI::renderGameBoard() {
         roleText.setPosition(x, y + 55);
         window.draw(roleText);
 
+        // פעולה אחרונה
+        sf::Text actionText;
+        actionText.setFont(font);
+        actionText.setCharacterSize(15);
+        actionText.setFillColor(sf::Color::White);
+        actionText.setString("Action: " + actionTypeToString(players[i]->getLastAction()));
+        sf::FloatRect actionBounds = actionText.getLocalBounds();
+        actionText.setOrigin(actionBounds.width / 2, 0);
+        actionText.setPosition(x, y + 85);  // מתחת למטבעות
+        window.draw(actionText);
+
+
         // מטבעות
         sf::Text coinsText;
         coinsText.setFont(font);
         coinsText.setCharacterSize(15);
         coinsText.setFillColor(sf::Color::White);
-        coinsText.setString("Coins: " + std::to_string(players[i]->getCoins()));
+        if (i == curr) {
+            coinsText.setString("Coins: " + std::to_string(players[i]->getCoins()));
+        } else {
+            coinsText.setString("Coins: ???");
+        }
         sf::FloatRect coinBounds = coinsText.getLocalBounds();
         coinsText.setOrigin(coinBounds.width / 2, 0);
         coinsText.setPosition(x, y + 70);

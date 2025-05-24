@@ -14,7 +14,7 @@ SRC_GUI = GameGUI.cpp \
           $(wildcard CoupGame/Roles/*.cpp)
 
 # קבצי מקור לבדיקות
-SRC_TEST = tests/Test.cpp \
+SRC_TEST = GameTest.cpp \
            $(wildcard CoupGame/*.cpp) \
            $(wildcard CoupGame/Roles/*.cpp)
 
@@ -42,8 +42,8 @@ test: $(SRC_TEST)
 	./$(TARGET_TEST)
 
 # בדיקת זיכרון עם valgrind על MAIN
-valgrind: Main
-	valgrind --leak-check=full --track-origins=yes ./$(TARGET_MAIN)
+valgrind: $(TARGET_TEST)
+	valgrind --leak-check=full --track-origins=yes -s ./$(TARGET_TEST)
 
 # ניקוי
 clean:

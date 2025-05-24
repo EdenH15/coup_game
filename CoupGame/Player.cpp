@@ -160,10 +160,12 @@ namespace CoupG {
         if (this->underSanction) {
             throw std::runtime_error("1");
         }
-        coins += 2;
+        coins += taxAmount();
         lastAction = ActionType::Tax;
         game.manageNextTurn(*this);
     }
+
+
 
     /**
      * @brief Pay 4 coins to bribe and earn another turn.
@@ -252,6 +254,7 @@ namespace CoupG {
      * @param p The player applying the sanction.
      */
     void Player::receiveSanctionBy(Player &p) {
+        (void)p;
         this->underSanction = true;
     }
 

@@ -23,31 +23,34 @@ namespace CoupG {
         startGame();
     }
 
-    /**
-     * @brief Destructor for the Game class.
-     * Frees memory allocated for all players.
-     */
-    Game::~Game() {
-        for (const Player *player: allPlayers) {
-            delete player;
+
+    void Game::clearPlayers() {
+        for (Player *p : allPlayers) {
+            delete p;
         }
         allPlayers.clear();
     }
 
     /**
-     * @brief Resets the game state completely.
-     * Frees memory for all players and resets game variables.
-     */
+         * @brief Destructor for the Game class.
+         * Frees memory allocated for all players.
+         */
+    Game::~Game() {
+        clearPlayers();
+    }
+
+    /**
+         * @brief Resets the game state completely.
+         * Frees memory for all players and resets game variables.
+         */
     void Game::reset() {
-        for (const Player *p: allPlayers) {
-            delete p;
-        }
-        allPlayers.clear();
+        clearPlayers();
         current_player = 0;
         gameActive = false;
         theWinner = "";
         underArrest = "";
     }
+
 
     /**
      * @brief Starts a new game by resetting the state.

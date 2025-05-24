@@ -15,7 +15,8 @@ namespace CoupG {
         Sanction,
         Coup,
         Invest,
-        Spy
+        Spy,
+        UndoTax
     };
 
 

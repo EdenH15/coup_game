@@ -51,6 +51,7 @@ namespace CoupG {
 
         // Actions
         virtual void gather();
+        virtual int taxAmount() const { return 2; }
         virtual void tax();
         virtual void bribe();
         virtual void arrest(Player& p);
@@ -60,8 +61,8 @@ namespace CoupG {
         virtual void receiveSanctionBy(Player& p);
         virtual void receiveArrestBy(Player& p);
         virtual void useAbility(){}
-        virtual void useAbility(Player& target){}
-        virtual int useSpyAbility(Player& target){return -1;}
+        virtual void useAbility(Player& target){(void)target;}
+        virtual int useSpyAbility(Player& target){(void)target;return -1;}
 
     };
 }

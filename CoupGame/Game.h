@@ -15,20 +15,22 @@ namespace CoupG {
         std::vector<Player *> allPlayers;
         size_t current_player{};
         bool gameActive{};
-        int numPlayers;
+        size_t numPlayers;
         std::string underArrest;
-        std::string theWinner{};
+        std::string theWinner;
 
     public:
         explicit Game(int numPlayers);
 
         ~Game();
+        Game(const Game&) = delete;
+        Game& operator=(const Game&) = delete;
+
 
         void reset();
-
         void startGame();
-
         void endGame();
+        void clearPlayers();
 
         size_t getCurrentPlayer() const;
         std::vector<Player *> getAllPlayers() const;

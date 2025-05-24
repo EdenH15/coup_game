@@ -22,6 +22,7 @@ namespace CoupG {
     }
 
     void Merchant::receiveArrestBy(Player& p) {
+        (void)p;
         if (coins<1) {
             throw std::runtime_error("2");
         }

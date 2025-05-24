@@ -4,6 +4,7 @@
 
 #ifndef PLAYERFACTORY_H
 #define PLAYERFACTORY_H
+#pragma once
 
 namespace CoupG {
     class PlayerFactory {

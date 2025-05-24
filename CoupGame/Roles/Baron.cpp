@@ -28,7 +28,7 @@ namespace CoupG {
     }
 
     void Baron::receiveSanctionBy(Player& p) {
-
+        (void)p;
         this->underSanction = true;
         this->coins += 1;
     }

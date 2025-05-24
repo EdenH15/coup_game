@@ -14,11 +14,6 @@ namespace CoupG {
         role = "Governor";
     }
 
-    void Governor::tax() {
-        coins += 3;
-        game.nextTurn();
-    }
-
     void Governor::useAbility(Player &p)  {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't block.");
@@ -27,7 +22,12 @@ namespace CoupG {
         if (p.getLastAction() != ActionType::Tax) {
             throw std::runtime_error("Can only block a tax action.");
         }
-
-        p.setCoins(p.getCoins()-2);
+        if (p.getRole()=="Governor") {
+            p.setCoins(p.getCoins()-3);
+        }
+        else {
+            p.setCoins(p.getCoins()-2);
+        }
+        lastAction=ActionType::UndoTax;
     }
 }

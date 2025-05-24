@@ -3,7 +3,7 @@
 //
 
 // PlayerFactory.h
-#pragma once
+
 #include "Player.h"
 #include "Roles/Baron.h"
 #include "Roles/Spy.h"

@@ -13,7 +13,7 @@ namespace CoupG {
     public:
         Governor(Game& game, const std::string& name);
         void useAbility(Player& p) override;
-        void tax() override;
+        int taxAmount() const override {return 3;}
     };
 }
 

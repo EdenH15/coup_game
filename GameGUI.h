@@ -1,5 +1,6 @@
 // GameGUI.h
 #pragma once
+#include <functional>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
@@ -63,6 +64,7 @@ namespace CoupG {
         void showMessageToPlayer(const std::string& message);
         bool showYesNoPopup(sf::RenderWindow &window, sf::Font &font, const std::string &message);
         Player *chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player *> players, sf::Font &font);
-        void showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &player);
+        void showPlayerActionMenu(sf::RenderWindow &window, Player &player);
+
     };
 }

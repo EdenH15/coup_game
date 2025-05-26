@@ -237,6 +237,7 @@ namespace CoupG {
      * @throw std::runtime_error if the player has less than 7 coins.
      */
     void Player::coup(Player &p) {
+        this->lastAction = ActionType::Coup;
         game.validateTurnStart(*this);
         if (coins < 7) {
             throw std::runtime_error("2");
@@ -244,7 +245,6 @@ namespace CoupG {
         coins -= 7;
         p.setActive(false);
         game.checkForWinner();
-        this->lastAction = ActionType::Coup;
         game.manageNextTurn(*this);
     }
 

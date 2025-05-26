@@ -459,7 +459,6 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
 }
 
 
-
 void GameGUI::showMessageToPlayer(const std::string &message) {
     sf::RenderWindow window(sf::VideoMode(600, 150), "הודעה לשחקן", sf::Style::Titlebar | sf::Style::Close);
 

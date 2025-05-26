@@ -62,9 +62,11 @@ namespace CoupG {
         void drawPlayerList();
         void renderGameBoard();
         void showMessageToPlayer(const std::string& message);
-        bool showYesNoPopup(sf::RenderWindow &window, sf::Font &font, const std::string &message);
+        bool showYesNoPopup(sf::Font &font, const std::string &message);
         Player *chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player *> players, sf::Font &font);
         void showPlayerActionMenu(sf::RenderWindow &window, Player &player);
+        void handlePlayerActionClick(const std::string &choice,Player &player, sf::RenderWindow &window, sf::Font &font);
+        bool validatePlayerTurnStart(Player &player, sf::RenderWindow &window, sf::Font &font);
 
     };
 }

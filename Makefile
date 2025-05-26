@@ -14,7 +14,7 @@ SRC_GUI = GameGUI.cpp \
           $(wildcard CoupGame/Roles/*.cpp)
 
 # קבצי מקור לבדיקות
-SRC_TEST = GameTest.cpp \
+SRC_TEST = PlayerTest.cpp \
            $(wildcard CoupGame/*.cpp) \
            $(wildcard CoupGame/Roles/*.cpp)
 

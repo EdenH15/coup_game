@@ -94,7 +94,7 @@ namespace CoupG {
      *
      * @return Number of players.
      */
-    int Game::getNumPlayers() const {
+    size_t Game::getNumPlayers() const {
         return numPlayers;
     }
 
@@ -144,7 +144,7 @@ namespace CoupG {
      *
      * @param name Name of the arrested player.
      */
-    void Game::setUnderArrest(std::string name) {
+    void Game::setUnderArrest(const std::string &name) {
         underArrest = name;
     }
 
@@ -164,8 +164,7 @@ namespace CoupG {
             if (allPlayers[nextIndex]->getActive()) {
                 current_player = nextIndex;
                 Player *p = allPlayers[current_player];
-                Merchant *merchant = dynamic_cast<Merchant *>(p);
-                if (merchant != nullptr) {
+                if (Merchant *merchant = dynamic_cast<Merchant *>(p); merchant != nullptr) {
                     merchant->useAbility();
                 }
                 return;

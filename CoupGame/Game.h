@@ -34,7 +34,7 @@ namespace CoupG {
 
         size_t getCurrentPlayer() const;
         std::vector<Player *> getAllPlayers() const;
-        int getNumPlayers() const;
+        size_t getNumPlayers() const;
         std::string getUnderArrest() const;
         std::string getWinner();
 
@@ -42,7 +42,7 @@ namespace CoupG {
         bool isPlayerInGame(const Player *player) const;
         bool isCurrentPlayer(const Player *player) const;
 
-        void setUnderArrest(std::string name);
+        void setUnderArrest(const std::string &name);
 
         void nextTurn();
 

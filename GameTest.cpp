@@ -9,31 +9,32 @@
 
 using namespace CoupG;
 
-TEST_CASE("Constructor throws on invalid player count") {
+TEST_CASE("Constructor") {
     CHECK_THROWS_AS(Game(1), std::invalid_argument);
     CHECK_THROWS_AS(Game(7), std::invalid_argument);
     CHECK_NOTHROW(Game(2));
     CHECK_NOTHROW(Game(6));
 }
 
-TEST_CASE("Start and end game set correct flags") {
+TEST_CASE("Start and end game") {
     Game game(3);
     CHECK(game.isGameActive() == true);
     game.endGame();
     CHECK(game.isGameActive() == false);
 }
 
-TEST_CASE("Add players up to limit and overflow") {
+TEST_CASE("Add players") {
     Game game(3);
 
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Alice");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "Eden");
     Player* p3 = PlayerFactory::createRandomPlayer(game, "Amir");
-    Player* p4 = PlayerFactory::createRandomPlayer(game, "Dave");
+    Player* p4 = PlayerFactory::createRandomPlayer(game, "David");
 
     CHECK_NOTHROW(game.addPlayer(p1));
     CHECK_NOTHROW(game.addPlayer(p2));
     CHECK_NOTHROW(game.addPlayer(p3));
+
     // Adding more than numPlayers throws
     CHECK_THROWS_AS(game.addPlayer(p4), std::runtime_error);
     delete p4;
@@ -42,7 +43,7 @@ TEST_CASE("Add players up to limit and overflow") {
     game.reset();
 }
 
-TEST_CASE("isPlayerInGame and exceptions") {
+TEST_CASE("Is player in game") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Eden");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "Lior");
@@ -61,7 +62,7 @@ TEST_CASE("isPlayerInGame and exceptions") {
 
 }
 
-TEST_CASE("nextTurn and current player logic with active and inactive players") {
+TEST_CASE("next turn+player active or not") {
     Game game(3);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Player1");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "Player2");
@@ -95,7 +96,7 @@ TEST_CASE("nextTurn and current player logic with active and inactive players") 
     game.reset();
 }
 
-TEST_CASE("getWinner throws if game active and returns winner if ended") {
+TEST_CASE("Get winner") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Winner");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "Loser");
@@ -118,30 +119,7 @@ TEST_CASE("getWinner throws if game active and returns winner if ended") {
     game.reset();
 }
 
-TEST_CASE("getWinner throws if game active and returns winner if ended") {
-    Game game(2);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "Winner");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "Loser");
-
-    game.addPlayer(p1);
-    game.addPlayer(p2);
-
-    CHECK_THROWS_AS(game.getWinner(), std::runtime_error);
-
-    // Simulate game end and winner set
-    game.removePlayer(*p2);
-    game.endGame();
-     // p1 active, p2 inactive
-    game.checkForWinner();
-
-    // Now winner should be "Winner"
-    std::string winnerName = game.getWinner();
-    CHECK(winnerName == p1->getName());
-
-    game.reset();
-}
-
-TEST_CASE("validateTurnStart behavior and exceptions") {
+TEST_CASE("validateTurnStart") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "ActivePlayer");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "InactivePlayer");
@@ -170,7 +148,7 @@ TEST_CASE("validateTurnStart behavior and exceptions") {
 }
 
 
-TEST_CASE("players() returns only active players' names") {
+TEST_CASE("players, returns only active players") {
     Game game(4);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "P2");
@@ -192,6 +170,24 @@ TEST_CASE("players() returns only active players' names") {
     CHECK(activePlayers.size() == 2);
     CHECK(activePlayers[0] == p1->getName());
     CHECK(activePlayers[1] == p3->getName());
+
+    game.reset();
+}
+
+TEST_CASE("Remove player") {
+    Game game(3);
+    Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
+    Player* p2 = PlayerFactory::createRandomPlayer(game, "P2");
+    Player* p3 = PlayerFactory::createRandomPlayer(game, "P3");
+
+    game.addPlayer(p1);
+    game.addPlayer(p2);
+    game.addPlayer(p3);
+
+    CHECK(game.isPlayerInGame(p2));
+    game.removePlayer(*p2);
+    CHECK_THROWS_AS(game.isPlayerInGame(p2), std::invalid_argument);
+    CHECK(p2->getActive() == false);
 
     game.reset();
 }

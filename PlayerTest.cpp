@@ -92,13 +92,16 @@ TEST_CASE("Arrest action") {
 
     //General gets his coin back
     CHECK(general->getCoins()==2);
-    general->tax();
-
     spy->setCoins(1);
-    merchant->arrest(*spy);
+    general->arrest(*spy);
+
+    //Failed because spy is the last arrest
+    CHECK_THROWS_AS(merchant->arrest(*spy), std::runtime_error);
+    merchant->tax();
 
     //Spy can block arrest
     spy->useSpyAbility(*baron);
+
     //Merchant pays 2 coins instead of losing 1 to another player
     merchant->setCoins(2);
     spy->arrest(*merchant);

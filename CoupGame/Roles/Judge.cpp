@@ -16,7 +16,7 @@ namespace CoupG {
         if (!this->active) {
             throw std::runtime_error("Inactive player can't invest.");
         }
-        if (p.getLastAction()==ActionType::Bribe) {
+        if (p.getLastAction()!=ActionType::Bribe) {
             throw std::invalid_argument("Judge can only undo bribe actions.");
         }
         p.setAnotherTurn(false);

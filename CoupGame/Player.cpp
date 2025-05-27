@@ -143,7 +143,7 @@ namespace CoupG {
     void Player::gather() {
         game.validateTurnStart(*this);
         if (this->underSanction) {
-            throw std::runtime_error("1");
+            throw std::runtime_error("Under sanction");
         }
         coins += 1;
         lastAction = ActionType::Gather;
@@ -158,7 +158,7 @@ namespace CoupG {
     void Player::tax() {
         game.validateTurnStart(*this);
         if (this->underSanction) {
-            throw std::runtime_error("1");
+            throw std::runtime_error("Under sanction");
         }
         coins += taxAmount();
         lastAction = ActionType::Tax;
@@ -175,7 +175,7 @@ namespace CoupG {
     void Player::bribe() {
         game.validateTurnStart(*this);
         if (coins < 4) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("Not enough coins for bribe");
         }
         coins -= 4;
         lastAction = ActionType::Bribe;
@@ -194,14 +194,14 @@ namespace CoupG {
      */
     void Player::arrest(Player &p) {
         game.validateTurnStart(*this);
-        if (this->isBlockArrest()) {
-            throw std::runtime_error("1");
-        }
         if (p.getCoins() < 1) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("The player doesn't have enough coins");
+        }
+        if (this->isBlockArrest()) {
+            throw std::runtime_error("Arrest blocked");
         }
         if (p.getName() == game.getUnderArrest()) {
-            throw std::runtime_error("3");
+            throw std::runtime_error("Already arrested");
         }
         p.receiveArrestBy(*this);
         game.setUnderArrest(p.getName());
@@ -220,7 +220,7 @@ namespace CoupG {
     void Player::sanction(Player &p) {
         game.validateTurnStart(*this);
         if (coins < 3) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("Not enough coins for sanction");
         }
         p.receiveSanctionBy(*this);
         coins -= 3;
@@ -240,7 +240,7 @@ namespace CoupG {
         this->lastAction = ActionType::Coup;
         game.validateTurnStart(*this);
         if (coins < 7) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("Not enough coins for coup");
         }
         coins -= 7;
         p.setActive(false);

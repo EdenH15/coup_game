@@ -24,7 +24,7 @@ namespace CoupG {
     void Merchant::receiveArrestBy(Player& p) {
         (void)p;
         if (coins<1) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("Merchant doesn't have enough coins to be arrested.");
         }
         if (this->getCoins() >= 2) {
             this->setCoins(this->coins-2);

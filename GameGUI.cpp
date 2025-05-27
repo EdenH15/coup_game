@@ -68,7 +68,7 @@ GameGUI::GameGUI(const int numPlayers)
     addPlayerText.setFillColor(goldHighlight);
     sf::FloatRect addPlayerTextBounds = addPlayerText.getLocalBounds();
     addPlayerText.setOrigin(addPlayerTextBounds.width / 2, addPlayerTextBounds.height / 2);
-    addPlayerText.setPosition(windowWidth / 2, 368 + 8); // יישור אנכי בתוך הכפתור
+    addPlayerText.setPosition(windowWidth / 2, 368 + 8);
 
     // Next Button
     nextButton.setSize(sf::Vector2f(200, 50));
@@ -172,290 +172,6 @@ void GameGUI::handleEvents() {
     }
 }
 
-// void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &player) {
-//     sf::Font font;
-//     if (!font.loadFromFile("arial.ttf")) {
-//         // טיפול במקרה שהפונט לא נטען
-//         std::cerr << "Failed to load font arial.ttf" << std::endl;
-//         return;
-//     }
-//
-//     float margin = 10.f;
-//     float buttonWidth = 140.f;
-//     float buttonHeight = 40.f;
-//     float menuX = margin;
-//     float menuY = 100.f; // מתחילים מלמעלה, מתחת לכותרת
-//     float buttonSpacing = 10.f;
-//
-//     std::vector<std::string> actions = {"gather", "tax", "bribe", "arrest", "sanction", "coup"};
-//     if (player.getRole() == "Spy") {
-//         actions.push_back("use spy ability");
-//     }
-//     if (player.getRole() == "Baron") {
-//         actions.push_back("Invest");
-//     }
-//
-//     // צבעים בגווני זהב וחום
-//     sf::Color goldColor(218, 165, 32);
-//     sf::Color brownColor(94, 63, 36);
-//     sf::Color goldHighlight(255, 215, 0);
-//
-//     // יצירת תיבת תפריט כללית (menuBox) שתהיה רקע אחיד שמאחורי הכפתורים
-//     sf::RectangleShape menuBox(sf::Vector2f(buttonWidth + 2 * margin, (buttonHeight + buttonSpacing) * actions.size() - buttonSpacing + 2 * margin));
-//     menuBox.setPosition(menuX - margin, menuY - margin);
-//     menuBox.setFillColor(sf::Color(50, 30, 10, 230)); // חצי שקוף חום כהה
-//     menuBox.setOutlineThickness(2);
-//     menuBox.setOutlineColor(goldColor);
-//
-//     // יצירת כפתורים וטקסטים
-//     std::vector<sf::RectangleShape> buttons;
-//     std::vector<sf::Text> buttonTexts;
-//
-//     for (size_t i = 0; i < actions.size(); ++i) {
-//         sf::RectangleShape button(sf::Vector2f(buttonWidth, buttonHeight));
-//         button.setPosition(menuX, menuY + i * (buttonHeight + buttonSpacing));
-//         button.setFillColor(brownColor);
-//         button.setOutlineThickness(3);
-//         button.setOutlineColor(goldColor);
-//         buttons.push_back(button);
-//
-//         sf::Text text;
-//         text.setFont(font);
-//         text.setString(actions[i]);
-//         text.setCharacterSize(18);
-//         text.setFillColor(goldHighlight);
-//
-//         sf::FloatRect textBounds = text.getLocalBounds();
-//         text.setOrigin(textBounds.left + textBounds.width / 2, textBounds.top + textBounds.height / 2);
-//         text.setPosition(menuX + buttonWidth / 2, menuY + i * (buttonHeight + buttonSpacing) + buttonHeight / 2);
-//         buttonTexts.push_back(text);
-//     }
-//
-//     window.clear();
-//     renderGameBoard();
-//
-//     // מציירים את תיבת התפריט והרכיבים
-//     window.draw(menuBox);
-//     for (size_t i = 0; i < buttons.size(); ++i) {
-//         window.draw(buttons[i]);
-//         window.draw(buttonTexts[i]);
-//     }
-//     window.display();
-//
-//     bool selected = false;
-//
-//
-//     while (!selected && window.isOpen()) {
-//         sf::Event event;
-//         try {
-//             game.validateTurnStart(player);
-//         } catch (const std::runtime_error &e) {
-//             std::string msg = e.what();
-//             if (msg == "Player is not active") {
-//                 showMessageToPlayer("Player is not active");
-//             } else if (msg == "Not your turn") {
-//                 showMessageToPlayer("Not your turn");
-//             } else if (msg == "Player must perform coup with 10 or more coins") {
-//                 showMessageToPlayer("You must perform a coup!");
-//
-//                 std::vector<Player *> targets;
-//                 for (Player *p : game.getAllPlayers()) {
-//                     if (p != &player && p->getActive()) {
-//                         targets.push_back(p);
-//                     }
-//                 }
-//
-//                 Player *target = chooseTargetPlayer(window, targets, font);
-//                 if (target) {
-//                     try {
-//                         player.coup(*target);
-//
-//                         for (Player *p : game.getAllPlayers()) {
-//                             if (p->getActive() && p != &player && p->getRole() == "General") {
-//                                 bool cancelCoup = showYesNoPopup(window, font,
-//                                     p->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
-//                                 if (cancelCoup) {
-//                                     p->useAbility(*target);
-//                                     showMessageToPlayer("Coup was prevented by " + p->getName());
-//                                     break;
-//                                 }
-//                             }
-//                         }
-//                     } catch (std::runtime_error &err) {
-//                         showMessageToPlayer("Coup failed: " + std::string(err.what()));
-//                     }
-//                 }
-//
-//                 return;
-//             }
-//             return;
-//         }
-//
-//         while (window.pollEvent(event)) {
-//             if (event.type == sf::Event::Closed) {
-//                 window.close();
-//             }
-//
-//             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-//                 int mouseX = event.mouseButton.x;
-//                 int mouseY = event.mouseButton.y;
-//
-//                 for (size_t i = 0; i < buttons.size(); ++i) {
-//                     if (buttons[i].getGlobalBounds().contains(static_cast<float>(mouseX), static_cast<float>(mouseY))) {
-//                         std::string choice = actions[i];
-//
-//                         if (choice == "gather") {
-//                             try {
-//                                 player.gather();
-//                             } catch (const std::runtime_error &) {
-//                                 showMessageToPlayer("You are under a sanction.");
-//                             }
-//
-//                         } else if (choice == "tax") {
-//                             try {
-//                                 player.tax();
-//                             } catch (const std::runtime_error &) {
-//                                 showMessageToPlayer("You are under a sanction.");
-//                             }
-//
-//                             for (Player *p : game.getAllPlayers()) {
-//                                 if (p->getActive() && p != &player && p->getRole() == "Governor") {
-//                                     bool cancelTax = showYesNoPopup(window, font,
-//                                         p->getName() + ", do you want to block the Tax from " + player.getName() + "?");
-//                                     if (cancelTax) {
-//                                         p->useAbility(player);
-//                                         showMessageToPlayer("Tax was blocked by " + p->getName());
-//                                         break;
-//                                     }
-//                                 }
-//                             }
-//
-//                         } else if (choice == "bribe") {
-//                             player.bribe();
-//                             for (Player *p : game.getAllPlayers()) {
-//                                 if (p->getActive() && p != &player && p->getRole() == "Judge") {
-//                                     bool cancelBribe = showYesNoPopup(window, font,
-//                                         p->getName() + ", do you want to block the bribe from " + player.getName() + "?");
-//                                     if (cancelBribe) {
-//                                         p->useAbility(player);
-//                                         showMessageToPlayer("Bribe was blocked by " + p->getName());
-//                                         break;
-//                                     }
-//                                 }
-//                             }
-//
-//                         } else if (choice == "arrest" || choice == "sanction" || choice == "coup") {
-//                             std::vector<Player *> targets;
-//                             for (Player *p : game.getAllPlayers()) {
-//                                 if (p != &player && p->getActive()) {
-//                                     targets.push_back(p);
-//                                 }
-//                             }
-//                             Player *target = chooseTargetPlayer(window, targets, font);
-//                             if (target) {
-//                                 if (choice == "arrest") {
-//                                     try {
-//                                         player.arrest(*target);
-//                                     } catch (const std::runtime_error &e) {
-//                                         std::string msg = e.what();
-//                                         if (msg == "1") {
-//                                             showMessageToPlayer("You are under a block arrest");
-//                                         } else if (msg == "2") {
-//                                             showMessageToPlayer(target->getName() + " doesn't have enough money");
-//                                         } else if (msg == "3") {
-//                                             showMessageToPlayer(target->getName() + " can't be arrested again");
-//                                         }
-//                                     }
-//                                 } else if (choice == "sanction") {
-//                                     try {
-//                                         player.sanction(*target);
-//                                     } catch (std::runtime_error &) {
-//                                         showMessageToPlayer("You don't have enough money to sanction.");
-//                                     }
-//                                 } else if (choice == "coup") {
-//                                     try {
-//                                         player.coup(*target);
-//
-//                                         for (Player *p : game.getAllPlayers()) {
-//                                             if (p->getActive() && p != &player && p->getRole() == "General") {
-//                                                 bool cancelCoup = showYesNoPopup(window, font,
-//                                                     p->getName() + ", do you want to prevent a coup against " + target->getName() + "?");
-//                                                 if (cancelCoup) {
-//                                                     try {
-//                                                         p->useAbility(*target);
-//                                                         showMessageToPlayer("Coup was prevented by " + p->getName());
-//                                                         break;
-//                                                     } catch (std::runtime_error &) {
-//                                                         showMessageToPlayer("You don't have enough money to prevent coup");
-//                                                     }
-//                                                 }
-//                                             }
-//                                         }
-//                                     } catch (std::runtime_error &) {
-//                                         showMessageToPlayer("You don't have enough money to coup.");
-//                                     }
-//                                 }
-//                             }
-//
-//                         } else if (choice == "Invest" && player.getRole() == "Baron") {
-//                             try {
-//                                 player.useAbility();
-//                             } catch (const std::runtime_error &) {
-//                                 showMessageToPlayer("You don't have enough money to invest.");
-//                             }
-//
-//                         } else if (choice == "use spy ability" && player.getRole() == "Spy") {
-//                             std::vector<Player *> targets;
-//                             for (Player *p : game.getAllPlayers()) {
-//                                 if (p != &player && p->getActive()) {
-//                                     targets.push_back(p);
-//                                 }
-//                             }
-//                             Player *target = chooseTargetPlayer(window, targets, font);
-//                             if (target) {
-//                                 int coins = player.useSpyAbility(*target);
-//                                 showMessageToPlayer("Target has " + std::to_string(coins) + " coins");
-//
-//                                 // הדגמה של חלון קטן עם ההודעה
-//                                 sf::RectangleShape infoBox(sf::Vector2f(300.f, 100.f));
-//                                 infoBox.setFillColor(sf::Color(50, 30, 10, 230));
-//                                 infoBox.setOutlineThickness(2);
-//                                 infoBox.setOutlineColor(goldColor);
-//                                 infoBox.setPosition((window.getSize().x - 300) / 2.f, (window.getSize().y - 100) / 2.f);
-//
-//                                 sf::Text infoText;
-//                                 infoText.setFont(font);
-//                                 infoText.setString("Target has " + std::to_string(coins) + " coins");
-//                                 infoText.setCharacterSize(20);
-//                                 infoText.setFillColor(goldHighlight);
-//                                 sf::FloatRect bounds = infoText.getLocalBounds();
-//                                 infoText.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-//                                 infoText.setPosition(infoBox.getPosition().x + 150.f, infoBox.getPosition().y + 50.f);
-//
-//                                 window.clear();
-//                                 renderGameBoard();
-//                                 window.draw(menuBox);
-//                                 for (size_t j = 0; j < buttons.size(); ++j) {
-//                                     window.draw(buttons[j]);
-//                                     window.draw(buttonTexts[j]);
-//                                 }
-//                                 window.draw(infoBox);
-//                                 window.draw(infoText);
-//                                 window.display();
-//
-//                                 sf::sleep(sf::seconds(2)); // מציגים את ההודעה 2 שניות
-//                             }
-//                         }
-//
-//                         selected = true;
-//                         break;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-//
 void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &player, sf::RenderWindow &window, sf::Font &font) {
     if (choice == "gather") {
         try {
@@ -516,9 +232,9 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
                 player.arrest(*target);
             } catch (const std::runtime_error &e) {
                 std::string msg = e.what();
-                if (msg == "1") showMessageToPlayer("You are under a block arrest");
-                else if (msg == "2") showMessageToPlayer(target->getName() + " doesn't have enough money");
-                else if (msg == "3") showMessageToPlayer(target->getName() + " can't be arrested again");
+                if (msg == "Arrest blocked") showMessageToPlayer("You are under a block arrest");
+                else if (msg == "The player doesn't have enough coins") showMessageToPlayer(target->getName() + " doesn't have enough money");
+                else if (msg == "Already arrested") showMessageToPlayer(target->getName() + " can't be arrested again");
             }
         }
 
@@ -694,6 +410,19 @@ bool GameGUI::validatePlayerTurnStart(CoupG::Player &player, sf::RenderWindow &w
             if (target) {
                 try {
                     player.coup(*target);
+                    for (Player *p : game.getAllPlayers()) {
+                        if (p->getActive() && p != &player && p->getRole() == "General") {
+                            if (showYesNoPopup(font,p->getName() + ", do you want to prevent a coup against " + target->getName() + "?")) {
+                                try {
+                                    p->useAbility(*target);
+                                    showMessageToPlayer("Coup was prevented by " + p->getName());
+                                } catch (...) {
+                                    showMessageToPlayer("You don't have enough money to prevent coup");
+                                }
+                                break;
+                            }
+                        }
+                    }
 
                 } catch (std::runtime_error &err) {
                     showMessageToPlayer("Coup failed: " + std::string(err.what()));

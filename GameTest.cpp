@@ -9,20 +9,29 @@
 
 using namespace CoupG;
 
+/**
+ * Test constructor validation for player count.
+ */
 TEST_CASE("Constructor") {
-    CHECK_THROWS_AS(Game(1), std::invalid_argument);
-    CHECK_THROWS_AS(Game(7), std::invalid_argument);
-    CHECK_NOTHROW(Game(2));
-    CHECK_NOTHROW(Game(6));
+    CHECK_THROWS_AS(Game(1), std::invalid_argument); // Less than minimum (2)
+    CHECK_THROWS_AS(Game(7), std::invalid_argument); // More than maximum (6)
+    CHECK_NOTHROW(Game(2));                          // Minimum valid
+    CHECK_NOTHROW(Game(6));                          // Maximum valid
 }
 
+/**
+ * Test starting and ending the game.
+ */
 TEST_CASE("Start and end game") {
     Game game(3);
-    CHECK(game.isGameActive() == true);
+    CHECK(game.isGameActive() == true); // Game should be active after construction
     game.endGame();
-    CHECK(game.isGameActive() == false);
+    CHECK(game.isGameActive() == false); // Game should be inactive after ending
 }
 
+/**
+ * Test adding players to the game.
+ */
 TEST_CASE("Add players") {
     Game game(3);
 
@@ -34,15 +43,15 @@ TEST_CASE("Add players") {
     CHECK_NOTHROW(game.addPlayer(p1));
     CHECK_NOTHROW(game.addPlayer(p2));
     CHECK_NOTHROW(game.addPlayer(p3));
+    CHECK_THROWS_AS(game.addPlayer(p4), std::runtime_error); // Exceed player limit
 
-    // Adding more than numPlayers throws
-    CHECK_THROWS_AS(game.addPlayer(p4), std::runtime_error);
-    delete p4;
-
-    // Clean up manually because Game destructor expects ownership of added players
-    game.reset();
+    delete p4; // Not added to game, needs manual cleanup
+    game.reset(); // Game owns p1-p3 and deletes them
 }
 
+/**
+ * Test if players are recognized as in-game.
+ */
 TEST_CASE("Is player in game") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Eden");
@@ -55,14 +64,16 @@ TEST_CASE("Is player in game") {
     CHECK(game.isPlayerInGame(p2));
 
     Player* p3 = PlayerFactory::createRandomPlayer(game, "NotInGame");
-    CHECK_THROWS_AS(game.isPlayerInGame(p3), std::invalid_argument);
+    CHECK_THROWS_AS(game.isPlayerInGame(p3), std::invalid_argument); // Not added to game
 
     game.reset();
-    delete p3;
-
+    delete p3; // Manually delete since not added
 }
 
-TEST_CASE("next turn+player active or not") {
+/**
+ * Test turn advancement and active player handling.
+ */
+TEST_CASE("Next turn and active player logic") {
     Game game(3);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Player1");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "Player2");
@@ -76,26 +87,26 @@ TEST_CASE("next turn+player active or not") {
     p2->setActive(false);
     p3->setActive(true);
 
-    // Start from player 0 (p1)
     CHECK(game.getCurrentPlayer() == 0);
     CHECK(game.isCurrentPlayer(p1));
 
-    game.nextTurn(); // Should skip p2 (inactive) and go to p3
+    game.nextTurn(); // Should skip p2
     CHECK(game.getCurrentPlayer() == 2);
     CHECK(game.isCurrentPlayer(p3));
 
-    // Deactivate p3, only p1 is active
     p3->setActive(false);
-    game.nextTurn(); // Should return to p1 since only active player
+    game.nextTurn(); // Only p1 is active
     CHECK(game.getCurrentPlayer() == 0);
 
-    // Remove all active players => nextTurn throws
     p1->setActive(false);
-    CHECK_THROWS_AS(game.nextTurn(), std::runtime_error);
+    CHECK_THROWS_AS(game.nextTurn(), std::runtime_error); // No active players
 
     game.reset();
 }
 
+/**
+ * Test getting the winner of the game.
+ */
 TEST_CASE("Get winner") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "Winner");
@@ -104,21 +115,22 @@ TEST_CASE("Get winner") {
     game.addPlayer(p1);
     game.addPlayer(p2);
 
-    CHECK_THROWS_AS(game.getWinner(), std::runtime_error);
+    CHECK_THROWS_AS(game.getWinner(), std::runtime_error); // Game not over yet
 
-    // Simulate game end and winner set
     game.endGame();
     game.setUnderArrest("");
-    game.removePlayer(*p2); // p1 active, p2 inactive
+    game.removePlayer(*p2); // p2 removed
     game.checkForWinner();
 
-    // Now winner should be "Winner"
     std::string winnerName = game.getWinner();
     CHECK(winnerName == p1->getName());
 
     game.reset();
 }
 
+/**
+ * Test validation before a player starts their turn.
+ */
 TEST_CASE("validateTurnStart") {
     Game game(2);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "ActivePlayer");
@@ -127,28 +139,26 @@ TEST_CASE("validateTurnStart") {
     game.addPlayer(p1);
     game.addPlayer(p2);
 
-
     p1->setActive(true);
     p2->setActive(false);
 
-
     CHECK_NOTHROW(game.validateTurnStart(*p1));
-    CHECK_THROWS_AS(game.validateTurnStart(*p2), std::runtime_error);
-
+    CHECK_THROWS_AS(game.validateTurnStart(*p2), std::runtime_error); // Not active
 
     game.nextTurn();
-    CHECK_THROWS_AS(game.validateTurnStart(*p2), std::runtime_error);
+    CHECK_THROWS_AS(game.validateTurnStart(*p2), std::runtime_error); // Still inactive
     CHECK_NOTHROW(game.validateTurnStart(*p1));
 
-
-    p1->setCoins(10);
+    p1->setCoins(10); // Too many coins, must coup
     CHECK_THROWS_AS(game.validateTurnStart(*p1), std::runtime_error);
 
     game.reset();
 }
 
-
-TEST_CASE("players, returns only active players") {
+/**
+ * Test players() returns only active player names.
+ */
+TEST_CASE("players() returns only active players") {
     Game game(4);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
     Player* p2 = PlayerFactory::createRandomPlayer(game, "P2");
@@ -174,6 +184,9 @@ TEST_CASE("players, returns only active players") {
     game.reset();
 }
 
+/**
+ * Test removing a player from the game.
+ */
 TEST_CASE("Remove player") {
     Game game(3);
     Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
@@ -186,10 +199,26 @@ TEST_CASE("Remove player") {
 
     CHECK(game.isPlayerInGame(p2));
     game.removePlayer(*p2);
-    CHECK_THROWS_AS(game.isPlayerInGame(p2), std::invalid_argument);
-    CHECK(p2->getActive() == false);
+    CHECK(game.isPlayerInGame(p2)==false);
+    CHECK(p2->getActive() == false); // Player should be marked inactive
 
     game.reset();
 }
 
 
+
+TEST_CASE("PlayerFactory::createRandomPlayer returns a valid player with a valid role") {
+    Game game(3);
+    std::vector<std::string> validRoles = {
+        "Baron", "Spy", "General", "Governor", "Merchant", "Judge"
+    };
+
+
+    Player* p = PlayerFactory::createRandomPlayer(game, "Alice");
+    REQUIRE(p != nullptr);
+    std::string role = p->getRole();
+    std::cout << "Role returned: " << role << std::endl; // הדפסת התפקיד שנבחר
+
+    CHECK(std::find(validRoles.begin(), validRoles.end(), role) != validRoles.end());
+    delete p;
+}

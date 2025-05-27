@@ -1,4 +1,4 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "doctest.h"
 #include "CoupGame/Game.h"
 #include "CoupGame/Player.h"
@@ -7,7 +7,6 @@
 #include "CoupGame/Roles/General.h"
 #include "CoupGame/Roles/Judge.h"
 #include <stdexcept>
-
 #include "CoupGame/Roles/Merchant.h"
 #include "CoupGame/Roles/Spy.h"
 using namespace CoupG;
@@ -25,23 +24,27 @@ TEST_CASE("Tax action") {
     game.addPlayer(spy);
 
     baron->tax();
-    CHECK(baron->getCoins()==2);
+    CHECK(baron->getCoins() == 2);
 
-    //Governor get 3 coin
+    // Governor gains 3 coins from tax
     governor->tax();
-    CHECK(governor->getCoins()==3);
-    merchant->tax();
-    CHECK(merchant->getCoins()==2);
+    CHECK(governor->getCoins() == 3);
 
-    //Governor can undo the tax
+
+    merchant->tax();
+    CHECK(merchant->getCoins() == 2);
+
+    // Governor can reverse the Merchant's tax action using ability
     governor->useAbility(*merchant);
-    CHECK(merchant->getCoins()==0);
+    CHECK(merchant->getCoins() == 0);
+
     spy->tax();
-    CHECK(spy->getCoins()==2);
+    CHECK(spy->getCoins() == 2);
+
     game.reset();
 }
 
-TEST_CASE("Gather+Sanction action") {
+TEST_CASE("Gather + Sanction action") {
     Game game(4);
     Player *baron = new Baron(game, "Dekel");
     Player *governor = new Governor(game, "Eden");
@@ -54,21 +57,25 @@ TEST_CASE("Gather+Sanction action") {
     game.addPlayer(spy);
 
     baron->gather();
-    CHECK(baron->getCoins()==1);
+    CHECK(baron->getCoins() == 1);
 
-    //Failed because the player does not have enough coins to attack
+    // Should fail because the Governor doesn't have enough coins to use sanction
     CHECK_THROWS_AS(governor->sanction(*judge), std::runtime_error);
+
     governor->setCoins(4);
     governor->sanction(*judge);
-    CHECK(governor->getCoins()==0);
+    CHECK(governor->getCoins() == 0);
 
-    //Judge under sanction
+    // Judge is under sanction and cannot perform actions
     CHECK_THROWS_AS(judge->gather(), std::runtime_error);
     CHECK_THROWS_AS(judge->tax(), std::runtime_error);
+
     judge->setCoins(3);
     judge->sanction(*baron);
-    //Baron get 1 coin if he attacked by sanction
-    CHECK(baron->getCoins()==2);
+
+    // Baron receives 1 coin when targeted by sanction
+    CHECK(baron->getCoins() == 2);
+
     game.reset();
 }
 
@@ -84,32 +91,35 @@ TEST_CASE("Arrest action") {
     game.addPlayer(merchant);
     game.addPlayer(spy);
 
-    //Failed because the general doesn't have 1 or more coins
+    // Should fail because the General has less than 1 coin and cannot be arrested
     CHECK_THROWS_AS(baron->arrest(*general), std::runtime_error);
 
     general->setCoins(2);
     baron->arrest(*general);
 
-    //General gets his coin back
-    CHECK(general->getCoins()==2);
+    // General retains his coins after being arrested
+    CHECK(general->getCoins() == 2);
+
     spy->setCoins(1);
     general->arrest(*spy);
 
-    //Failed because spy is the last arrest
+    // Should fail because the Spy was the most recent target of arrest
     CHECK_THROWS_AS(merchant->arrest(*spy), std::runtime_error);
+
     merchant->tax();
 
-    //Spy can block arrest
+    // Spy blocks arrest using their special ability
     spy->useSpyAbility(*baron);
 
-    //Merchant pays 2 coins instead of losing 1 to another player
+    // Merchant pays 2 coins as a penalty instead of losing 1 coin to the arresting player
     merchant->setCoins(2);
     spy->arrest(*merchant);
-    CHECK(merchant->getCoins()==0);
-    CHECK(spy->getCoins()==0);
+    CHECK(merchant->getCoins() == 0);
+    CHECK(spy->getCoins() == 0);
 
-    //Baron under block arrest
+    // Baron is blocked from performing arrests
     CHECK_THROWS_AS(baron->arrest(*general), std::runtime_error);
+
     game.reset();
 }
 
@@ -123,26 +133,33 @@ TEST_CASE("Bribe action") {
     game.addPlayer(governor);
     game.addPlayer(judge);
 
-    //Failed because the player does not have enough coins to bribe
+    // Should fail because the Baron doesn't have enough coins to bribe
     CHECK_THROWS_AS(baron->bribe(), std::runtime_error);
+
     baron->tax();
 
-    //Failed because the Baron doesn't have one more turn
+    // Should fail because the Baron lost their turn due to a previous action
     CHECK_THROWS_AS(baron->gather(), std::runtime_error);
 
     governor->setCoins(4);
     governor->bribe();
-    //Judge cancel governor bribe
+
+    // Judge cancels the Governor's bribe using ability
     judge->useAbility(*governor);
-    CHECK(governor->getCoins()==0);
+    CHECK(governor->getCoins() == 0);
+
     governor->tax();
-    //Failed because judge cancel the bribe
+
+    // Should fail because the bribe was cancelled by the Judge
     CHECK_THROWS_AS(governor->gather(), std::runtime_error);
+
     judge->setCoins(4);
     judge->bribe();
     judge->tax();
-    //Judge have one more turn
+
+    // Judge gains an additional turn
     judge->gather();
+
     game.reset();
 }
 
@@ -156,25 +173,22 @@ TEST_CASE("Coup action") {
     game.addPlayer(general);
     game.addPlayer(merchant);
 
-
-    //Failed because the player does not have enough coins to coup
+    // Should fail because the Baron doesn't have enough coins to perform a coup
     CHECK_THROWS_AS(baron->coup(*merchant), std::runtime_error);
+
     baron->setCoins(7);
-
-
     baron->coup(*merchant);
-    CHECK(merchant->getActive()==false);
+    CHECK(merchant->getActive() == false);
 
-    ////Failed because the general does not have enough coins to prevent coup
+    // Should fail because the General doesn't have enough coins to prevent the coup
     CHECK_THROWS_AS(general->useAbility(*merchant), std::runtime_error);
+
     general->setCoins(5);
 
-    //General prevent a coup
+    // General successfully prevents the coup using their ability
     general->useAbility(*merchant);
-    CHECK(merchant->getActive()==true);
-    CHECK(baron->getCoins()==0);
+    CHECK(merchant->getActive() == true);
+    CHECK(baron->getCoins() == 0);
 
     game.reset();
-
 }
-

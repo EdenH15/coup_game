@@ -15,6 +15,7 @@ namespace CoupG {
         void run();
 
     private:
+
         int numPlayers = 0;
         bool playersSelected = false;
         std::vector<sf::Text> playerCountOptions;
@@ -67,6 +68,5 @@ namespace CoupG {
         void showPlayerActionMenu(sf::RenderWindow &window, Player &player);
         void handlePlayerActionClick(const std::string &choice,Player &player, sf::RenderWindow &window, sf::Font &font);
         bool validatePlayerTurnStart(Player &player, sf::RenderWindow &window, sf::Font &font);
-
     };
 }

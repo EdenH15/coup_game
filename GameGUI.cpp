@@ -11,6 +11,12 @@
 
 using namespace CoupG;
 
+/**
+ * @brief Constructor for GameGUI class.
+ * Initializes the game window and all GUI elements such as title, buttons, and input box.
+ * Sets their fonts, sizes, colors, and positions.
+ * @param numPlayers Number of players for the game instance.
+ */
 GameGUI::GameGUI(const int numPlayers)
     : window(sf::VideoMode(1000, 600), "Coup Game"), game(numPlayers) {
     font.loadFromFile("arial.ttf");
@@ -43,7 +49,7 @@ GameGUI::GameGUI(const int numPlayers)
     startText.setFillColor(goldHighlight);
     sf::FloatRect startTextBounds = startText.getLocalBounds();
     startText.setOrigin(startTextBounds.width / 2, startTextBounds.height / 2);
-    startText.setPosition(windowWidth / 2, 210 + 10); // +10 ליישור אנכי בתוך הכפתור
+    startText.setPosition(windowWidth / 2, 210 + 10); // +10 vertical alignment in button
 
     // Input Box
     inputBox.setSize(sf::Vector2f(300, 40));
@@ -53,7 +59,7 @@ GameGUI::GameGUI(const int numPlayers)
     inputText.setFont(font);
     inputText.setCharacterSize(22);
     inputText.setFillColor(sf::Color::Black);
-    inputText.setPosition((windowWidth - inputBox.getSize().x) / 2 + 10, 305); // קצת פנימה מהקופסה
+    inputText.setPosition((windowWidth - inputBox.getSize().x) / 2 + 10, 305); // slight padding inside box
 
     // Add Player Button
     addPlayerButton.setSize(sf::Vector2f(150, 40));
@@ -87,15 +93,21 @@ GameGUI::GameGUI(const int numPlayers)
 }
 
 
+/**
+ * @brief Main loop to run the game GUI.
+ * Handles window events and rendering continuously.
+ * Checks game state and displays winner message when the game ends.
+ * Resets GUI to home screen after game finishes.
+ */
 void GameGUI::run() {
     while (window.isOpen()) {
         handleEvents();
         render();
 
-        // אם אנחנו במסך המשחק ורק שחקן אחד נשאר
-        if (inGameScreen && !game.isGameActive()) {  // שימוש ב־gameActive דרך פונקציה או ישירות אם public
+        // If currently in game screen and game is no longer active (one player left)
+        if (inGameScreen && !game.isGameActive()) {
             try {
-                std::string winnerName = game.getWinner();  // מחזיר שם של שחקן
+                std::string winnerName = game.getWinner();
                 if (!winnerName.empty()) {
                     std::string message = "Game Over! Winner: " + winnerName;
                     showMessageToPlayer(message);
@@ -106,7 +118,7 @@ void GameGUI::run() {
                 showMessageToPlayer("Game Over! No winner.");
             }
 
-            // מחזירים למסך הבית
+            // Reset to home screen state
             inGameScreen = false;
             gameStarted = false;
             readyToStartGame = false;
@@ -115,8 +127,11 @@ void GameGUI::run() {
     }
 }
 
-
-
+/**
+ * @brief Handles all user input events.
+ * Responds to window closing, button clicks, and text input.
+ * Starts the game, manages player addition, and navigates game screens.
+ */
 void GameGUI::handleEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -172,6 +187,14 @@ void GameGUI::handleEvents() {
     }
 }
 
+
+/**
+ * @brief Handles the player's selected action.
+ * @param choice The action chosen by the player.
+ * @param player The current player.
+ * @param window The game window.
+ * @param font The font used for displaying messages.
+ */
 void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &player, sf::RenderWindow &window, sf::Font &font) {
     if (choice == "gather") {
         try {
@@ -293,6 +316,11 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
     }
 }
 
+/**
+ * @brief Displays the action menu for the current player.
+ * @param window The game window.
+ * @param player The current player.
+ */
 void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &player) {
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
@@ -382,9 +410,14 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
     }
 }
 
-
-
-bool GameGUI::validatePlayerTurnStart(CoupG::Player &player, sf::RenderWindow &window, sf::Font &font) {
+/**
+ * @brief Validates the player's turn before it begins.
+ * @param player The player whose turn is starting.
+ * @param window The game window.
+ * @param font The font used for messages.
+ * @return True if the turn is valid, false otherwise.
+ */
+bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, sf::Font &font) {
     try {
         game.validateTurnStart(player);
         return true;
@@ -436,12 +469,15 @@ bool GameGUI::validatePlayerTurnStart(CoupG::Player &player, sf::RenderWindow &w
 
 
 
+/**
+ * Displays a short popup message to the player for 3 seconds.
+ */
 void GameGUI::showMessageToPlayer(const std::string &message) {
     sf::RenderWindow window(sf::VideoMode(600, 150), "הודעה לשחקן", sf::Style::Titlebar | sf::Style::Close);
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
-        return; // טיפול במקרה שהפונט לא נטען
+        return;
     }
 
     sf::Text text;
@@ -450,7 +486,6 @@ void GameGUI::showMessageToPlayer(const std::string &message) {
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::White);
 
-    // מיקום הטקסט במרכז החלון
     sf::FloatRect textRect = text.getLocalBounds();
     text.setOrigin(textRect.left + textRect.width / 2.0f,
                    textRect.top + textRect.height / 2.0f);
@@ -466,7 +501,7 @@ void GameGUI::showMessageToPlayer(const std::string &message) {
             }
         }
 
-        // סגור את החלון אחרי 3 שניות
+        // Auto-close after 3 seconds
         if (clock.getElapsedTime().asSeconds() >= 3.0f) {
             window.close();
         }
@@ -477,7 +512,10 @@ void GameGUI::showMessageToPlayer(const std::string &message) {
     }
 }
 
-
+/**
+ * Displays a Yes/No popup with a given message and returns the player's choice.
+ * @return true if "Yes" was clicked, false otherwise.
+ */
 bool GameGUI::showYesNoPopup(sf::Font &font, const std::string &message) {
     sf::RenderWindow popup(sf::VideoMode(500, 200), "Confirmation", sf::Style::Titlebar | sf::Style::Close);
 
@@ -538,11 +576,13 @@ bool GameGUI::showYesNoPopup(sf::Font &font, const std::string &message) {
     return false;
 }
 
-
+/**
+ * Displays a clickable list of players and returns the one selected by the user.
+ * @return pointer to the selected Player, or nullptr if the window is closed.
+ */
 Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player *> players, sf::Font &font) {
-
     sf::RectangleShape menuBox(sf::Vector2f(250, 30 * players.size()));
-    menuBox.setFillColor(sf::Color(212, 175, 55));  // זהב
+    menuBox.setFillColor(sf::Color(212, 175, 55));  // Gold
     menuBox.setPosition(500, 100);
 
     std::vector<sf::Text> playerOptions;
@@ -550,14 +590,14 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
         sf::Text txt;
         txt.setFont(font);
         txt.setCharacterSize(16);
-        txt.setFillColor(sf::Color(101, 67, 33));  // חום כהה
+        txt.setFillColor(sf::Color(101, 67, 33));  // Dark brown
         txt.setString(players[i]->getName());
         txt.setPosition(510, 100 + i * 30);
         playerOptions.push_back(txt);
     }
 
     window.draw(menuBox);
-    for (auto &txt: playerOptions)
+    for (auto &txt : playerOptions)
         window.draw(txt);
     window.display();
 
@@ -569,6 +609,7 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mouseY = event.mouseButton.y;
                 size_t index = (mouseY - 100) / 30;
+                // Check if mouse click corresponds to a valid player index
                 if (index < players.size()) {
                     return players[index];
                 }
@@ -578,6 +619,13 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
     return nullptr;
 }
 
+
+/**
+ * @brief Converts an ActionType enum value to its string representation.
+ *
+ * @param action The ActionType to convert.
+ * @return std::string The string name of the action, or "Unknown" if undefined.
+ */
 std::string actionTypeToString(ActionType action) {
     switch (action) {
         case ActionType::None: return "None";
@@ -594,6 +642,12 @@ std::string actionTypeToString(ActionType action) {
     }
 }
 
+/**
+ * @brief Renders the main game board with all players, table, and current turn text.
+ *
+ * Displays players in a circular layout around a central table.
+ * Highlights the active player and shows their details.
+ */
 void GameGUI::renderGameBoard() {
     const float windowWidth = 1000;
     const float windowHeight = 600;
@@ -605,72 +659,68 @@ void GameGUI::renderGameBoard() {
     size_t n = players.size();
     size_t curr = game.getCurrentPlayer();
 
-    // טקסט על תור נוכחי - ממורכז למעלה
+    // Display current turn text
     currentTurnText.setFont(font);
     currentTurnText.setCharacterSize(24);
     currentTurnText.setFillColor(sf::Color::White);
     currentTurnText.setString("Current Turn: " + players[curr]->getName());
     sf::FloatRect textBounds = currentTurnText.getLocalBounds();
     currentTurnText.setOrigin(textBounds.width / 2, textBounds.height / 2);
-    currentTurnText.setPosition(centerX+300, 30);
+    currentTurnText.setPosition(centerX + 300, 30);
     window.draw(currentTurnText);
 
-    // שולחן עגול עם הצללה וטקסט
-    sf::CircleShape tableShadow(radius - 30);  // צללה טיפה יותר גדולה
-    tableShadow.setFillColor(sf::Color(30, 30, 30, 150));  // אפור כהה עם שקיפות
+    // Draw shadow and table
+    sf::CircleShape tableShadow(radius - 30);
+    tableShadow.setFillColor(sf::Color(30, 30, 30, 150));
     tableShadow.setOrigin(tableShadow.getRadius(), tableShadow.getRadius());
-    tableShadow.setPosition(centerX + 5, centerY + 5);  // מעט מוזז למטה-ימינה
+    tableShadow.setPosition(centerX + 5, centerY + 5);
     window.draw(tableShadow);
 
-    sf::CircleShape table(radius + 60); // טיפה יותר גדול
-    table.setFillColor(sf::Color(94, 63, 36, 100)); // חום כהה עם שקיפות (100 מתוך 255)
-    table.setOutlineColor(sf::Color(218, 165, 32, 150)); // זהב עם שקיפות 150
+    sf::CircleShape table(radius + 60);
+    table.setFillColor(sf::Color(94, 63, 36, 100));
+    table.setOutlineColor(sf::Color(218, 165, 32, 150));
     table.setOutlineThickness(6);
     table.setOrigin(table.getRadius(), table.getRadius());
     table.setPosition(centerX, centerY);
     window.draw(table);
 
-
-    // טקסט במרכז השולחן
+    // Center text on table
     sf::Text tableText;
     tableText.setFont(font);
     tableText.setCharacterSize(28);
     tableText.setStyle(sf::Text::Bold | sf::Text::Italic);
-    tableText.setFillColor(sf::Color(255, 215, 0,100)); // זהב נוצץ
+    tableText.setFillColor(sf::Color(255, 215, 0, 100));
     tableText.setString("COUP TABLE");
     sf::FloatRect tableTextBounds = tableText.getLocalBounds();
     tableText.setOrigin(tableTextBounds.width / 2, tableTextBounds.height / 2);
     tableText.setPosition(centerX, centerY - 10);
     window.draw(tableText);
 
-    sf::Color activePlayerColor(0, 168, 232);     // טורקיז כחול יפה
-    sf::Color inactivePlayerColor(120, 120, 120); // אפור מעודן
-
+    sf::Color activePlayerColor(0, 168, 232);
+    sf::Color inactivePlayerColor(120, 120, 120);
 
     for (size_t i = 0; i < n; ++i) {
         float angle = 2 * M_PI * i / n;
         float x = centerX + radius * std::cos(angle);
         float y = centerY + radius * std::sin(angle);
 
-        // שחקן כעיגול
+        // Draw player circle
         sf::CircleShape circle(30);
         circle.setPosition(x - 30, y - 30);
-        sf::Color softGreen(100, 200, 100);
         circle.setFillColor(players[i]->getActive() ? activePlayerColor : inactivePlayerColor);
         window.draw(circle);
 
-        // עיגול צהוב לשחקן הנוכחי
+        // Highlight current player with an outline
         if (i == curr) {
             sf::CircleShape outline(34);
             outline.setPosition(x - 34, y - 34);
             outline.setFillColor(sf::Color::Transparent);
             outline.setOutlineThickness(4);
-            outline.setOutlineColor(sf::Color(255, 215, 0)); // ורוד זוהר / סגול
+            outline.setOutlineColor(sf::Color(255, 215, 0));
             window.draw(outline);
-
         }
 
-        // שם
+        // Player name
         sf::Text nameText;
         nameText.setFont(font);
         nameText.setCharacterSize(15);
@@ -681,7 +731,7 @@ void GameGUI::renderGameBoard() {
         nameText.setPosition(x, y + 35);
         window.draw(nameText);
 
-        // תפקיד
+        // Player role
         sf::Text roleText;
         roleText.setFont(font);
         roleText.setCharacterSize(15);
@@ -692,7 +742,7 @@ void GameGUI::renderGameBoard() {
         roleText.setPosition(x, y + 55);
         window.draw(roleText);
 
-        // פעולה אחרונה
+        // Last action
         sf::Text actionText;
         actionText.setFont(font);
         actionText.setCharacterSize(15);
@@ -700,20 +750,15 @@ void GameGUI::renderGameBoard() {
         actionText.setString("Action: " + actionTypeToString(players[i]->getLastAction()));
         sf::FloatRect actionBounds = actionText.getLocalBounds();
         actionText.setOrigin(actionBounds.width / 2, 0);
-        actionText.setPosition(x, y + 85);  // מתחת למטבעות
+        actionText.setPosition(x, y + 85);
         window.draw(actionText);
 
-
-        // מטבעות
+        // Coins (hidden from non-current players)
         sf::Text coinsText;
         coinsText.setFont(font);
         coinsText.setCharacterSize(15);
         coinsText.setFillColor(sf::Color::White);
-        if (i == curr) {
-            coinsText.setString("Coins: " + std::to_string(players[i]->getCoins()));
-        } else {
-            coinsText.setString("Coins: ???");
-        }
+        coinsText.setString(i == curr ? "Coins: " + std::to_string(players[i]->getCoins()) : "Coins: ???");
         sf::FloatRect coinBounds = coinsText.getLocalBounds();
         coinsText.setOrigin(coinBounds.width / 2, 0);
         coinsText.setPosition(x, y + 70);
@@ -721,9 +766,15 @@ void GameGUI::renderGameBoard() {
     }
 }
 
-
-void GameGUI::handleTextInput(sf::Event &event) {
-    if (event.text.unicode == 8) {
+/**
+ * @brief Handles text input events for the player name input box.
+ *
+ * Supports backspace and ASCII printable characters.
+ *
+ * @param event The SFML text input event.
+ */
+void GameGUI::handleTextInput(const sf::Event &event) {
+    if (event.text.unicode == 8) { // Backspace
         if (!playerNameInput.empty())
             playerNameInput.pop_back();
     } else if (event.text.unicode < 128 && std::isprint(event.text.unicode)) {
@@ -732,12 +783,22 @@ void GameGUI::handleTextInput(sf::Event &event) {
     inputText.setString(playerNameInput);
 }
 
+/**
+ * @brief Draws the list of players on the screen.
+ *
+ * Iterates over playerListDisplay and renders each text item.
+ */
 void GameGUI::drawPlayerList() {
     for (auto &playerText: playerListDisplay) {
         window.draw(playerText);
     }
 }
 
+/**
+ * @brief Main render function for the game GUI.
+ *
+ * Clears the window and renders the appropriate screen depending on game state.
+ */
 void GameGUI::render() {
     window.clear(sf::Color::Black);
 
@@ -772,8 +833,9 @@ void GameGUI::render() {
     window.display();
 }
 
+
 int main() {
-    CoupG::GameGUI gui(6);
+    GameGUI gui(6);
     gui.run();
     return 0;
 }

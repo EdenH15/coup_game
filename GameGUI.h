@@ -59,7 +59,7 @@ namespace CoupG {
 
         void handleEvents();
         void render();
-        void handleTextInput(sf::Event& event);
+        void handleTextInput(const sf::Event& event);
         void drawPlayerList();
         void renderGameBoard();
         void showMessageToPlayer(const std::string& message);

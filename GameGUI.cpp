@@ -114,7 +114,7 @@ void GameGUI::run() {
                 } else {
                     showMessageToPlayer("Game Over! No winner.");
                 }
-            } catch (const std::exception& e) {
+            } catch (const std::exception &e) {
                 showMessageToPlayer("Game Over! No winner.");
             }
 
@@ -157,8 +157,7 @@ void GameGUI::handleEvents() {
                     Player *p = PlayerFactory::createRandomPlayer(game, playerNameInput);
                     try {
                         game.addPlayer(p);
-                    }
-                    catch (const std::exception& e) {
+                    } catch (const std::exception &e) {
                         delete p;
                     }
 
@@ -195,21 +194,21 @@ void GameGUI::handleEvents() {
  * @param window The game window.
  * @param font The font used for displaying messages.
  */
-void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &player, sf::RenderWindow &window, sf::Font &font) {
+void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &player, sf::RenderWindow &window,
+                                      sf::Font &font) {
     if (choice == "gather") {
         try {
             player.gather();
         } catch (...) {
             showMessageToPlayer("You are under a sanction.");
         }
-    }
-
-    else if (choice == "tax") {
+    } else if (choice == "tax") {
         try {
             player.tax();
-            for (Player *p : game.getAllPlayers()) {
+            for (Player *p: game.getAllPlayers()) {
                 if (p->getActive() && p != &player && p->getRole() == "Governor") {
-                    if (showYesNoPopup(font, p->getName() + ", do you want to block the Tax from " + player.getName() + "?")) {
+                    if (showYesNoPopup(
+                        font, p->getName() + ", do you want to block the Tax from " + player.getName() + "?")) {
                         p->useAbility(player);
                         showMessageToPlayer("Tax was blocked by " + p->getName());
                         break;
@@ -219,29 +218,25 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
         } catch (...) {
             showMessageToPlayer("You are under a sanction.");
         }
-    }
-
-    else if (choice == "bribe") {
+    } else if (choice == "bribe") {
         try {
             player.bribe();
-            for (Player *p : game.getAllPlayers()) {
+            for (Player *p: game.getAllPlayers()) {
                 if (p->getActive() && p != &player && p->getRole() == "Judge") {
-                    if (showYesNoPopup(font, p->getName() + ", do you want to block the bribe from " + player.getName() + "?")) {
+                    if (showYesNoPopup(
+                        font, p->getName() + ", do you want to block the bribe from " + player.getName() + "?")) {
                         p->useAbility(player);
                         showMessageToPlayer("Bribe was blocked by " + p->getName());
                         break;
                     }
                 }
             }
-        }
-        catch (...) {
+        } catch (...) {
             showMessageToPlayer("You don't have enough money to bribe");
         }
-    }
-
-    else if (choice == "arrest" || choice == "sanction" || choice == "coup") {
+    } else if (choice == "arrest" || choice == "sanction" || choice == "coup") {
         std::vector<Player *> targets;
-        for (Player *p : game.getAllPlayers()) {
+        for (Player *p: game.getAllPlayers()) {
             if (p != &player && p->getActive()) {
                 targets.push_back(p);
             }
@@ -256,26 +251,25 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
             } catch (const std::runtime_error &e) {
                 std::string msg = e.what();
                 if (msg == "Arrest blocked") showMessageToPlayer("You are under a block arrest");
-                else if (msg == "The player doesn't have enough coins") showMessageToPlayer(target->getName() + " doesn't have enough money");
+                else if (msg == "The player doesn't have enough coins") showMessageToPlayer(
+                    target->getName() + " doesn't have enough money");
                 else if (msg == "Already arrested") showMessageToPlayer(target->getName() + " can't be arrested again");
             }
-        }
-
-        else if (choice == "sanction") {
+        } else if (choice == "sanction") {
             try {
                 player.sanction(*target);
             } catch (...) {
                 showMessageToPlayer("You don't have enough money to sanction.");
             }
-        }
-
-        else if (choice == "coup") {
+        } else if (choice == "coup") {
             try {
                 player.coup(*target);
 
-                for (Player *p : game.getAllPlayers()) {
+                for (Player *p: game.getAllPlayers()) {
                     if (p->getActive() && p != &player && p->getRole() == "General") {
-                        if (showYesNoPopup(font,p->getName() + ", do you want to prevent a coup against " + target->getName() + "?")) {
+                        if (showYesNoPopup(
+                            font, p->getName() + ", do you want to prevent a coup against " + target->getName() +
+                                  "?")) {
                             try {
                                 p->useAbility(*target);
                                 showMessageToPlayer("Coup was prevented by " + p->getName());
@@ -290,19 +284,15 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
                 showMessageToPlayer("You don't have enough money to coup.");
             }
         }
-    }
-
-    else if (choice == "Invest" && player.getRole() == "Baron") {
+    } else if (choice == "Invest" && player.getRole() == "Baron") {
         try {
             player.useAbility();
         } catch (...) {
             showMessageToPlayer("You don't have enough money to invest.");
         }
-    }
-
-    else if (choice == "use spy ability" && player.getRole() == "Spy") {
+    } else if (choice == "use spy ability" && player.getRole() == "Spy") {
         std::vector<Player *> targets;
-        for (Player *p : game.getAllPlayers()) {
+        for (Player *p: game.getAllPlayers()) {
             if (p != &player && p->getActive()) {
                 targets.push_back(p);
             }
@@ -343,7 +333,9 @@ void GameGUI::showPlayerActionMenu(sf::RenderWindow &window, CoupG::Player &play
     sf::Color brownColor(94, 63, 36);
     sf::Color goldHighlight(255, 215, 0);
 
-    sf::RectangleShape menuBox(sf::Vector2f(buttonWidth + 2 * margin, (buttonHeight + buttonSpacing) * actions.size() - buttonSpacing + 2 * margin));
+    sf::RectangleShape menuBox(sf::Vector2f(buttonWidth + 2 * margin,
+                                            (buttonHeight + buttonSpacing) * actions.size() - buttonSpacing + 2 *
+                                            margin));
     menuBox.setPosition(menuX - margin, menuY - margin);
     menuBox.setFillColor(sf::Color(50, 30, 10, 230));
     menuBox.setOutlineThickness(2);
@@ -421,8 +413,7 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
     try {
         game.validateTurnStart(player);
         return true;
-    }
-    catch (const std::runtime_error &e) {
+    } catch (const std::runtime_error &e) {
         std::string msg = e.what();
 
         if (msg == "Player is not active") {
@@ -433,7 +424,7 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
             showMessageToPlayer("You must perform a coup!");
 
             std::vector<Player *> targets;
-            for (Player *p : game.getAllPlayers()) {
+            for (Player *p: game.getAllPlayers()) {
                 if (p != &player && p->getActive()) {
                     targets.push_back(p);
                 }
@@ -443,9 +434,11 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
             if (target) {
                 try {
                     player.coup(*target);
-                    for (Player *p : game.getAllPlayers()) {
+                    for (Player *p: game.getAllPlayers()) {
                         if (p->getActive() && p != &player && p->getRole() == "General") {
-                            if (showYesNoPopup(font,p->getName() + ", do you want to prevent a coup against " + target->getName() + "?")) {
+                            if (showYesNoPopup(
+                                font, p->getName() + ", do you want to prevent a coup against " + target->getName() +
+                                      "?")) {
                                 try {
                                     p->useAbility(*target);
                                     showMessageToPlayer("Coup was prevented by " + p->getName());
@@ -456,7 +449,6 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
                             }
                         }
                     }
-
                 } catch (std::runtime_error &err) {
                     showMessageToPlayer("Coup failed: " + std::string(err.what()));
                 }
@@ -465,8 +457,6 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
         return false;
     }
 }
-
-
 
 
 /**
@@ -582,7 +572,7 @@ bool GameGUI::showYesNoPopup(sf::Font &font, const std::string &message) {
  */
 Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player *> players, sf::Font &font) {
     sf::RectangleShape menuBox(sf::Vector2f(250, 30 * players.size()));
-    menuBox.setFillColor(sf::Color(212, 175, 55));  // Gold
+    menuBox.setFillColor(sf::Color(212, 175, 55)); // Gold
     menuBox.setPosition(500, 100);
 
     std::vector<sf::Text> playerOptions;
@@ -590,14 +580,14 @@ Player *GameGUI::chooseTargetPlayer(sf::RenderWindow &window, std::vector<Player
         sf::Text txt;
         txt.setFont(font);
         txt.setCharacterSize(16);
-        txt.setFillColor(sf::Color(101, 67, 33));  // Dark brown
+        txt.setFillColor(sf::Color(101, 67, 33)); // Dark brown
         txt.setString(players[i]->getName());
         txt.setPosition(510, 100 + i * 30);
         playerOptions.push_back(txt);
     }
 
     window.draw(menuBox);
-    for (auto &txt : playerOptions)
+    for (auto &txt: playerOptions)
         window.draw(txt);
     window.display();
 
@@ -774,7 +764,8 @@ void GameGUI::renderGameBoard() {
  * @param event The SFML text input event.
  */
 void GameGUI::handleTextInput(const sf::Event &event) {
-    if (event.text.unicode == 8) { // Backspace
+    if (event.text.unicode == 8) {
+        // Backspace
         if (!playerNameInput.empty())
             playerNameInput.pop_back();
     } else if (event.text.unicode < 128 && std::isprint(event.text.unicode)) {

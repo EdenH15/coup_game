@@ -7,14 +7,13 @@
 #include <string>
 
 namespace CoupG {
-
-    Baron::Baron(Game& game, const std::string& name)
+    Baron::Baron(Game &game, const std::string &name)
         : Player(game, name) {
         role = "Baron";
     }
 
 
-    void Baron::useAbility()  {
+    void Baron::useAbility() {
         if (!this->active) {
             throw std::runtime_error("Inactive player can't invest.");
         }
@@ -27,10 +26,9 @@ namespace CoupG {
         this->coins += 6;
     }
 
-    void Baron::receiveSanctionBy(Player& p) {
-        (void)p;
+    void Baron::receiveSanctionBy(Player &p) {
+        (void) p;
         this->underSanction = true;
         this->coins += 1;
     }
-
 }

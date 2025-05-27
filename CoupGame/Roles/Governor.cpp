@@ -8,13 +8,12 @@
 #include "../Player.h"
 
 namespace CoupG {
-
-    Governor::Governor(Game& game, const std::string& name)
-       : Player(game, name) {
+    Governor::Governor(Game &game, const std::string &name)
+        : Player(game, name) {
         role = "Governor";
     }
 
-    void Governor::useAbility(Player &p)  {
+    void Governor::useAbility(Player &p) {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't block.");
         }
@@ -22,12 +21,11 @@ namespace CoupG {
         if (p.getLastAction() != ActionType::Tax) {
             throw std::runtime_error("Can only block a tax action.");
         }
-        if (p.getRole()=="Governor") {
-            p.setCoins(p.getCoins()-3);
+        if (p.getRole() == "Governor") {
+            p.setCoins(p.getCoins() - 3);
+        } else {
+            p.setCoins(p.getCoins() - 2);
         }
-        else {
-            p.setCoins(p.getCoins()-2);
-        }
-        lastAction=ActionType::UndoTax;
+        lastAction = ActionType::UndoTax;
     }
 }

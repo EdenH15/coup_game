@@ -1,4 +1,3 @@
-
 #include "doctest.h"
 #include "CoupGame/Game.h"
 #include "CoupGame/Player.h"

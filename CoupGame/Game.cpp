@@ -7,7 +7,6 @@
 #include <iostream>
 
 namespace CoupG {
-
     /**
      * @brief Constructor for the Game class.
      * Initializes the game with the specified number of players.
@@ -25,7 +24,7 @@ namespace CoupG {
 
 
     void Game::clearPlayers() {
-        for (Player *p : allPlayers) {
+        for (Player *p: allPlayers) {
             delete p;
         }
         allPlayers.clear();
@@ -302,7 +301,7 @@ namespace CoupG {
         if (!isCurrentPlayer(&p)) {
             throw std::runtime_error("Not your turn");
         }
-        if (p.getCoins() >= 10 && p.getLastAction()!=ActionType::Coup) {
+        if (p.getCoins() >= 10 && p.getLastAction() != ActionType::Coup) {
             throw std::runtime_error("Player must perform coup with 10 or more coins");
         }
     }
@@ -326,5 +325,4 @@ namespace CoupG {
             p.setAnotherTurn(false);
         }
     }
-
 }

@@ -9,13 +9,12 @@
 #include "iostream"
 
 namespace CoupG {
-
-    Spy::Spy(Game& game, const std::string& name)
+    Spy::Spy(Game &game, const std::string &name)
         : Player(game, name) {
         role = "Spy";
     }
 
-    int Spy::useSpyAbility(Player& p)  {
+    int Spy::useSpyAbility(Player &p) {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't use abilities.");
         }
@@ -25,9 +24,6 @@ namespace CoupG {
         }
 
         p.setBlockArrest(true);
-
         return p.getCoins();
     }
-
 }
-

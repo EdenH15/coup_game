@@ -8,7 +8,6 @@
 #include "Roles/Governor.h"
 
 namespace CoupG {
-
     /**
      * @brief Constructor for a Player.
      *
@@ -16,7 +15,8 @@ namespace CoupG {
      * @param name The player's name.
      */
     Player::Player(Game &game, const std::string &name)
-        : name(name), game(game), coins(0), active(true), underSanction(false), blockArrest(false) {}
+        : name(name), game(game), coins(0), active(true), underSanction(false), blockArrest(false) {
+    }
 
 
     /**
@@ -82,7 +82,6 @@ namespace CoupG {
     bool Player::getAnotherTurn() const {
         return anotherTurn;
     }
-
 
 
     /**
@@ -164,7 +163,6 @@ namespace CoupG {
         lastAction = ActionType::Tax;
         game.manageNextTurn(*this);
     }
-
 
 
     /**
@@ -254,7 +252,7 @@ namespace CoupG {
      * @param p The player applying the sanction.
      */
     void Player::receiveSanctionBy(Player &p) {
-        (void)p;
+        (void) p;
         this->underSanction = true;
     }
 
@@ -269,5 +267,4 @@ namespace CoupG {
         this->coins -= 1;
         p.setCoins(p.getCoins() + 1);
     }
-
 }

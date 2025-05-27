@@ -15,8 +15,8 @@ using namespace CoupG;
 TEST_CASE("Constructor") {
     CHECK_THROWS_AS(Game(1), std::invalid_argument); // Less than minimum (2)
     CHECK_THROWS_AS(Game(7), std::invalid_argument); // More than maximum (6)
-    CHECK_NOTHROW(Game(2));                          // Minimum valid
-    CHECK_NOTHROW(Game(6));                          // Maximum valid
+    CHECK_NOTHROW(Game(2)); // Minimum valid
+    CHECK_NOTHROW(Game(6)); // Maximum valid
 }
 
 /**
@@ -35,10 +35,10 @@ TEST_CASE("Start and end game") {
 TEST_CASE("Add players") {
     Game game(3);
 
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "Alice");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "Eden");
-    Player* p3 = PlayerFactory::createRandomPlayer(game, "Amir");
-    Player* p4 = PlayerFactory::createRandomPlayer(game, "David");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "Alice");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "Eden");
+    Player *p3 = PlayerFactory::createRandomPlayer(game, "Amir");
+    Player *p4 = PlayerFactory::createRandomPlayer(game, "David");
 
     CHECK_NOTHROW(game.addPlayer(p1));
     CHECK_NOTHROW(game.addPlayer(p2));
@@ -54,8 +54,8 @@ TEST_CASE("Add players") {
  */
 TEST_CASE("Is player in game") {
     Game game(2);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "Eden");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "Lior");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "Eden");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "Lior");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -63,7 +63,7 @@ TEST_CASE("Is player in game") {
     CHECK(game.isPlayerInGame(p1));
     CHECK(game.isPlayerInGame(p2));
 
-    Player* p3 = PlayerFactory::createRandomPlayer(game, "NotInGame");
+    Player *p3 = PlayerFactory::createRandomPlayer(game, "NotInGame");
     CHECK_THROWS_AS(game.isPlayerInGame(p3), std::invalid_argument); // Not added to game
 
     game.reset();
@@ -75,9 +75,9 @@ TEST_CASE("Is player in game") {
  */
 TEST_CASE("Next turn and active player logic") {
     Game game(3);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "Player1");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "Player2");
-    Player* p3 = PlayerFactory::createRandomPlayer(game, "Player3");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "Player1");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "Player2");
+    Player *p3 = PlayerFactory::createRandomPlayer(game, "Player3");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -109,8 +109,8 @@ TEST_CASE("Next turn and active player logic") {
  */
 TEST_CASE("Get winner") {
     Game game(2);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "Winner");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "Loser");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "Winner");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "Loser");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -133,8 +133,8 @@ TEST_CASE("Get winner") {
  */
 TEST_CASE("validateTurnStart") {
     Game game(2);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "ActivePlayer");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "InactivePlayer");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "ActivePlayer");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "InactivePlayer");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -160,10 +160,10 @@ TEST_CASE("validateTurnStart") {
  */
 TEST_CASE("players() returns only active players") {
     Game game(4);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "P2");
-    Player* p3 = PlayerFactory::createRandomPlayer(game, "P3");
-    Player* p4 = PlayerFactory::createRandomPlayer(game, "P4");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "P1");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "P2");
+    Player *p3 = PlayerFactory::createRandomPlayer(game, "P3");
+    Player *p4 = PlayerFactory::createRandomPlayer(game, "P4");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -189,9 +189,9 @@ TEST_CASE("players() returns only active players") {
  */
 TEST_CASE("Remove player") {
     Game game(3);
-    Player* p1 = PlayerFactory::createRandomPlayer(game, "P1");
-    Player* p2 = PlayerFactory::createRandomPlayer(game, "P2");
-    Player* p3 = PlayerFactory::createRandomPlayer(game, "P3");
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "P1");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "P2");
+    Player *p3 = PlayerFactory::createRandomPlayer(game, "P3");
 
     game.addPlayer(p1);
     game.addPlayer(p2);
@@ -206,7 +206,6 @@ TEST_CASE("Remove player") {
 }
 
 
-
 TEST_CASE("PlayerFactory::createRandomPlayer returns a valid player with a valid role") {
     Game game(3);
     std::vector<std::string> validRoles = {
@@ -214,7 +213,7 @@ TEST_CASE("PlayerFactory::createRandomPlayer returns a valid player with a valid
     };
 
 
-    Player* p = PlayerFactory::createRandomPlayer(game, "Alice");
+    Player *p = PlayerFactory::createRandomPlayer(game, "Alice");
     REQUIRE(p != nullptr);
     std::string role = p->getRole();
     std::cout << "Role returned: " << role << std::endl; // הדפסת התפקיד שנבחר

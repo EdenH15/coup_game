@@ -30,7 +30,7 @@ namespace CoupG {
 
         const std::vector<std::string> roles = {"BARON", "SPY", "GENERAL", "GOVERNOR", "MERCHANT", "JUDGE"};
         std::uniform_int_distribution<int> dist(0, roles.size() - 1);
-        int i = dist(engine);
+        const int i = dist(engine);
 
         const std::string &role = roles[i];
 

@@ -23,7 +23,7 @@ GameGUI::GameGUI(const int numPlayers)
     : window(sf::VideoMode(1000, 600), "Coup Game"), game(numPlayers) {
     font.loadFromFile("arial.ttf");
 
-    const float windowWidth = 1000;
+    constexpr float windowWidth = 1000;
     //const float windowHeight = 600;
 
     // Title
@@ -31,15 +31,15 @@ GameGUI::GameGUI(const int numPlayers)
     title.setString("Welcome to Coup Game!");
     title.setCharacterSize(50);
     title.setFillColor(sf::Color::White);
-    sf::FloatRect titleBounds = title.getLocalBounds();
+    const sf::FloatRect titleBounds = title.getLocalBounds();
     title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
     title.setPosition(windowWidth / 2, 100);
 
     // Start Button
     startButton.setSize(sf::Vector2f(200, 50));
-    sf::Color goldColor(218, 165, 32);
-    sf::Color brownColor(94, 63, 36);
-    sf::Color goldHighlight(255, 215, 0);
+    const sf::Color goldColor(218, 165, 32);
+    const sf::Color brownColor(94, 63, 36);
+    const sf::Color goldHighlight(255, 215, 0);
     startButton.setFillColor(brownColor);
     startButton.setOutlineThickness(3);
     startButton.setOutlineColor(goldColor);
@@ -49,7 +49,7 @@ GameGUI::GameGUI(const int numPlayers)
     startText.setString("START GAME");
     startText.setCharacterSize(24);
     startText.setFillColor(goldHighlight);
-    sf::FloatRect startTextBounds = startText.getLocalBounds();
+    const sf::FloatRect startTextBounds = startText.getLocalBounds();
     startText.setOrigin(startTextBounds.width / 2, startTextBounds.height / 2);
     startText.setPosition(windowWidth / 2, 210 + 10); // +10 vertical alignment in button
 
@@ -89,7 +89,7 @@ GameGUI::GameGUI(const int numPlayers)
     nextButtonText.setString("Next To The Game");
     nextButtonText.setCharacterSize(22);
     nextButtonText.setFillColor(goldHighlight);
-    sf::FloatRect nextTextBounds = nextButtonText.getLocalBounds();
+    const sf::FloatRect nextTextBounds = nextButtonText.getLocalBounds();
     nextButtonText.setOrigin(nextTextBounds.width / 2, nextTextBounds.height / 2);
     nextButtonText.setPosition(windowWidth / 2, 550 + 10);
 }
@@ -253,8 +253,9 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
             } catch (const std::runtime_error &e) {
                 std::string msg = e.what();
                 if (msg == "Arrest blocked") showMessageToPlayer("You are under a block arrest");
-                else if (msg == "The player doesn't have enough coins") showMessageToPlayer(
-                    target->getName() + " doesn't have enough money");
+                else if (msg == "The player doesn't have enough coins")
+                    showMessageToPlayer(
+                        target->getName() + " doesn't have enough money");
                 else if (msg == "Already arrested") showMessageToPlayer(target->getName() + " can't be arrested again");
             }
         } else if (choice == "sanction") {
@@ -827,9 +828,105 @@ void GameGUI::render() {
 }
 
 
-int main() {
+int askNumberOfPlayers() {
+    sf::RenderWindow window(sf::VideoMode(700, 300), "Choose Number of Players");
 
-    GameGUI gui(3);
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Failed to load font\n";
+        return 2;
+    }
+
+    sf::Color goldColor(218, 165, 32); // outline
+    sf::Color brownColor(94, 63, 36); // background of button
+    sf::Color goldHighlight(255, 215, 0); // text + hover
+    sf::Color backgroundColor = sf::Color::Black;
+
+    const int buttonWidth = 100;
+    const int buttonHeight = 60;
+    const int spacing = 20;
+    const int startX = (700 - (5 * buttonWidth + 4 * spacing)) / 2;
+    const int yPos = 140;
+
+    sf::Text title;
+    title.setFont(font);
+    title.setString("Choose number of players");
+    title.setCharacterSize(28);
+    title.setFillColor(sf::Color::White);
+    sf::FloatRect titleBounds = title.getLocalBounds();
+    title.setOrigin(titleBounds.left + titleBounds.width / 2.0f, titleBounds.top + titleBounds.height / 2.0f);
+    title.setPosition(700 / 2.0f, 60);
+
+    struct Button {
+        sf::RectangleShape shape;
+        sf::Text label;
+        int value{};
+    };
+
+    std::vector<Button> buttons;
+
+    for (int i = 2; i <= 6; ++i) {
+        Button button;
+        button.shape.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+        button.shape.setFillColor(brownColor);
+        button.shape.setOutlineThickness(3);
+        button.shape.setOutlineColor(goldColor);
+        button.shape.setPosition(startX + (i - 2) * (buttonWidth + spacing), yPos);
+
+        button.label.setFont(font);
+        button.label.setString(std::to_string(i));
+        button.label.setCharacterSize(30);
+        button.label.setFillColor(goldHighlight);
+
+        sf::FloatRect textBounds = button.label.getLocalBounds();
+        button.label.setOrigin(textBounds.left + textBounds.width / 2.0f,
+                               textBounds.top + textBounds.height / 2.0f);
+        button.label.setPosition(button.shape.getPosition().x + buttonWidth / 2.0f,
+                                 button.shape.getPosition().y + buttonHeight / 2.0f);
+
+        button.value = i;
+        buttons.push_back(button);
+    }
+
+    while (window.isOpen()) {
+        sf::Event event{};
+        sf::Vector2f mouse(sf::Mouse::getPosition(window));
+
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                for (const auto &button: buttons) {
+                    if (button.shape.getGlobalBounds().contains(mouse)) {
+                        window.close();
+                        return button.value;
+                    }
+                }
+            }
+        }
+
+        window.clear(backgroundColor);
+        window.draw(title);
+
+        for (auto &button: buttons) {
+            if (button.shape.getGlobalBounds().contains(mouse)) {
+                button.shape.setFillColor(goldHighlight);
+            } else {
+                button.shape.setFillColor(brownColor);
+            }
+            window.draw(button.shape);
+            window.draw(button.label);
+        }
+
+        window.display();
+    }
+    return 2; // fallback
+}
+
+int main() {
+    const int numPlayers = askNumberOfPlayers();
+    GameGUI gui(numPlayers);
     gui.run();
     return 0;
 }

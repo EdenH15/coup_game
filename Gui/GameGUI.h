@@ -1,6 +1,6 @@
-// GameGUI.h
+//Email:Edenhassin@gmail.com
+
 #pragma once
-#include <functional>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>

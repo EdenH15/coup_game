@@ -1,3 +1,5 @@
+//Email:Edenhassin@gmail.com
+
 #include "Gui/GameGUI.h"
 #include "CoupGame/Player.h"
 #include "CoupGame/Roles/Governor.h"

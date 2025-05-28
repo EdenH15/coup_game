@@ -34,6 +34,28 @@ Players aim to eliminate others using strategy and bluffing — the last remaini
 Actions cost or gain coins and can be blocked; illegal moves raise exceptions.
 
 ---
+## ✅ Unit Testing
+The project includes unit tests that verify:
+
+- Player actions and special abilities
+- Turn flow and game progression
+- Victory detection and endgame logic
+- Handling of illegal actions and boundary cases
+
+---
+
+## 🎨 Graphical Interface
+
+Built with **SFML**, the GUI includes:
+
+- A welcome screen and game start menu
+- Player count and name input with validation
+- Role reveal stage and role management
+- Game board with real-time player status
+- Interactive popups for target selection and error feedback
+
+---
+
 
 ## ⚙️ Build & Run Instructions
 
@@ -48,27 +70,6 @@ make GUI         # Launch the graphical game (requires SFML)
 
 💡 Make sure SFML is installed to run the GUI version
 
-## ✅ Unit Testing
-The project includes unit tests that verify:
-
-- Player actions and special abilities  
-- Turn flow and game progression  
-- Victory detection and endgame logic  
-- Handling of illegal actions and boundary cases  
-
----
-
-## 🎨 Graphical Interface
-
-Built with **SFML**, the GUI includes:
-
-- A welcome screen and game start menu  
-- Player count and name input with validation  
-- Role reveal stage and hidden role management  
-- Game board with real-time player status  
-- Interactive popups for target selection and error feedback  
-
----
 
 ## 📌 Requirements
 
@@ -78,6 +79,6 @@ Built with **SFML**, the GUI includes:
 👩‍💻 Author
     Eden Hassin  
     Edenhassin@gmail.com  
-    Project completed: March–April 2025
+    Project completed: May 2025
 
 

@@ -42,6 +42,7 @@ TEST_CASE("Add players") {
 
     CHECK_NOTHROW(game.addPlayer(p1));
     CHECK_NOTHROW(game.addPlayer(p2));
+    CHECK_THROWS_AS(game.addPlayer(p2), std::invalid_argument);
     CHECK_NOTHROW(game.addPlayer(p3));
     CHECK_THROWS_AS(game.addPlayer(p4), std::runtime_error); // Exceed player limit
 
@@ -206,6 +207,49 @@ TEST_CASE("Remove player") {
 }
 
 
+/**
+ * Test Game reset clears all game state.
+ */
+TEST_CASE("Game reset clears game state") {
+    Game game(2);
+    game.startGame();
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "P1");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "P2");
+
+    game.addPlayer(p1);
+    game.addPlayer(p2);
+    game.setUnderArrest(p1->getName());
+
+    game.reset();
+
+    CHECK(game.isGameActive() == false);
+    CHECK(game.getAllPlayers().size()== 0);
+    CHECK(game.getWinner() == "");
+    CHECK(game.getUnderArrest()=="");
+
+}
+
+TEST_CASE("turn function") {
+    Game game(3);
+    //No players in the game
+    CHECK_THROWS_AS(game.turn(), std::runtime_error);
+
+    Player *p1 = PlayerFactory::createRandomPlayer(game, "P1");
+    Player *p2 = PlayerFactory::createRandomPlayer(game, "P2");
+    game.addPlayer(p1);
+    game.addPlayer(p2);
+    p1->setActive(false);
+    p2->setActive(false);
+
+    //No active players
+    CHECK_THROWS_AS(game.turn(), std::runtime_error);
+    p1->setActive(true);
+    p2->setActive(true);
+    CHECK(game.turn() == "P1");
+    game.reset();
+}
+
+
 TEST_CASE("PlayerFactory::createRandomPlayer returns a valid player with a valid role") {
     Game game(3);
     std::vector<std::string> validRoles = {
@@ -216,7 +260,7 @@ TEST_CASE("PlayerFactory::createRandomPlayer returns a valid player with a valid
     Player *p = PlayerFactory::createRandomPlayer(game, "Alice");
     REQUIRE(p != nullptr);
     std::string role = p->getRole();
-    std::cout << "Role returned: " << role << std::endl; // הדפסת התפקיד שנבחר
+    std::cout << "Role returned: " << role << std::endl;
 
     CHECK(std::find(validRoles.begin(), validRoles.end(), role) != validRoles.end());
     delete p;

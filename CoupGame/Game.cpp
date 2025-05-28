@@ -195,11 +195,19 @@ namespace CoupG {
      * @throws std::runtime_error if the game already has the maximum number of players.
      */
     void Game::addPlayer(Player *player) {
+        // Check if the player is already in the vector
+        for (const auto p : allPlayers) {
+            if (p == player) {
+                throw std::invalid_argument("Player already added");
+            }
+        }
         if (allPlayers.size() < numPlayers) {
             allPlayers.push_back(player);
-        } else {
+        }
+        else {
             throw std::runtime_error("No more players can be added");
         }
+
     }
 
     /**

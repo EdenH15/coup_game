@@ -1,13 +1,13 @@
 #include "doctest.h"
-#include "CoupGame/Game.h"
-#include "CoupGame/Player.h"
-#include "CoupGame/Roles/Baron.h"
-#include "CoupGame/Roles/Governor.h"
-#include "CoupGame/Roles/General.h"
-#include "CoupGame/Roles/Judge.h"
+#include "../CoupGame/Game.h"
+#include "../CoupGame/Player.h"
+#include "../CoupGame/Roles/Baron.h"
+#include "../CoupGame/Roles/Governor.h"
+#include "../CoupGame/Roles/General.h"
+#include "../CoupGame/Roles/Judge.h"
 #include <stdexcept>
-#include "CoupGame/Roles/Merchant.h"
-#include "CoupGame/Roles/Spy.h"
+#include "../CoupGame/Roles/Merchant.h"
+#include "../CoupGame/Roles/Spy.h"
 using namespace CoupG;
 
 TEST_CASE("Tax action") {

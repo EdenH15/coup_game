@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
-#include "CoupGame/Game.h"
-#include "CoupGame/PlayerFactory.h"
+#include "../CoupGame/Game.h"
+#include "../CoupGame/PlayerFactory.h"
 
 namespace CoupG {
 
@@ -26,27 +26,20 @@ namespace CoupG {
 
         sf::RenderWindow window;
         sf::Font font;
-
-        // תצוגת טקסט
         sf::Text title;
 
-        // כפתור התחלה
         sf::RectangleShape startButton;
         sf::Text startText;
 
-        // תיבת קלט שם שחקן
         sf::RectangleShape inputBox;
         sf::Text inputText;
         std::string playerNameInput;
 
-        // כפתור להוספת שחקן
         sf::RectangleShape addPlayerButton;
         sf::Text addPlayerText;
 
-        // תצוגת שמות שחקנים
         std::vector<sf::Text> playerListDisplay;
 
-        // כפתור NEXT לשלב המשחק
         sf::RectangleShape nextButton;
         sf::Text nextButtonText;
         bool readyToStartGame = false;

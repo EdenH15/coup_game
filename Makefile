@@ -11,12 +11,12 @@ SRC_MAIN = main.cpp \
            $(wildcard CoupGame/Roles/*.cpp)
 
 # Source files for GUI (GameGUI.cpp is the main)
-SRC_GUI = GameGUI.cpp \
+SRC_GUI = Gui/GameGUI.cpp \
           $(wildcard CoupGame/*.cpp) \
           $(wildcard CoupGame/Roles/*.cpp)
 
 # Source files for tests (one combined test executable)
-SRC_TEST = PlayerTest.cpp GameTest.cpp \
+SRC_TEST = Tests/PlayerTest.cpp Tests/GameTest.cpp \
            $(wildcard CoupGame/*.cpp) \
            $(wildcard CoupGame/Roles/*.cpp)
 

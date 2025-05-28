@@ -212,6 +212,10 @@ namespace CoupG {
         if (!isPlayerInGame(&player)) {
             throw std::runtime_error("Player doesn't exist");
         }
+        if (player.getActive()) {
+            throw std::runtime_error("Player is already active");
+        }
+
         player.setActive(true);
     }
 
@@ -225,6 +229,10 @@ namespace CoupG {
         if (!isPlayerInGame(&player)) {
             throw std::runtime_error("Player doesn't exist");
         }
+        if (!player.getActive()) {
+            throw std::runtime_error("Player is already not active");
+        }
+
         player.setActive(false);
     }
 
@@ -280,6 +288,9 @@ namespace CoupG {
                 ++count;
                 lastPlayer = p->getName();
             }
+        }
+        if (count == 0) {
+            throw std::runtime_error("No active players remain. Game state invalid.");
         }
 
         if (count == 1) {

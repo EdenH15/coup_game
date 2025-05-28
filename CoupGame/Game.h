@@ -23,23 +23,34 @@ namespace CoupG {
         explicit Game(int numPlayers);
 
         ~Game();
-        Game(const Game&) = delete;
-        Game& operator=(const Game&) = delete;
+
+        Game(const Game &) = delete;
+
+        Game &operator=(const Game &) = delete;
 
 
         void reset();
+
         void startGame();
+
         void endGame();
+
         void clearPlayers();
 
         size_t getCurrentPlayer() const;
+
         std::vector<Player *> getAllPlayers() const;
+
         size_t getNumPlayers() const;
+
         std::string getUnderArrest() const;
+
         std::string getWinner();
 
         bool isGameActive() const;
+
         bool isPlayerInGame(const Player *player) const;
+
         bool isCurrentPlayer(const Player *player) const;
 
         void setUnderArrest(const std::string &name);

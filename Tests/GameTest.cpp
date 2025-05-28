@@ -4,8 +4,8 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-#include "CoupGame/Roles/Baron.h"
-#include "CoupGame/PlayerFactory.h"
+#include "../CoupGame/Roles/Baron.h"
+#include "../CoupGame/PlayerFactory.h"
 
 using namespace CoupG;
 

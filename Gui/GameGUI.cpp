@@ -2,12 +2,12 @@
 #include <iostream>
 #include <cmath>
 #include <SFML/System.hpp>
-#include "CoupGame/Roles/Baron.h"
-#include "CoupGame/ActionType.h"
-#include "CoupGame/Roles/General.h"
-#include "CoupGame/Roles/Spy.h"
-#include "CoupGame/Roles/Governor.h"
-#include "CoupGame/Roles/Judge.h"
+#include "../CoupGame/Roles/Baron.h"
+#include "../CoupGame/ActionType.h"
+#include "../CoupGame/Roles/General.h"
+#include "../CoupGame/Roles/Spy.h"
+#include "../CoupGame/Roles/Governor.h"
+#include "../CoupGame/Roles/Judge.h"
 
 using namespace CoupG;
 

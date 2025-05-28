@@ -17,7 +17,6 @@ namespace CoupG {
         if (!this->active) {
             throw std::runtime_error("Inactive players can't block.");
         }
-
         if (p.getLastAction() != ActionType::Tax) {
             throw std::runtime_error("Can only block a tax action.");
         }

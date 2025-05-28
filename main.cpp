@@ -8,10 +8,10 @@
 #include "CoupGame/Roles/General.h"
 #include "CoupGame/Roles/Judge.h"
 #include "CoupGame/Game.h"
-
 #include <iostream>
 #include <vector>
 #include <exception>
+
 using namespace std;
 using namespace CoupG;
 

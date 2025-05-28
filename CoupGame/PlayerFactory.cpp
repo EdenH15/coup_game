@@ -10,13 +10,9 @@
 #include "Roles/Merchant.h"
 #include "Roles/Judge.h"
 #include <string>
-#include <cstdlib>
-#include <ctime>
 #include <vector>
 #include "PlayerFactory.h"
 #include <random>
-#include <vector>
-#include <string>
 #include <chrono>
 
 namespace CoupG {

@@ -24,7 +24,7 @@ namespace CoupG {
 
 
     void Game::clearPlayers() {
-        for (Player *p: allPlayers) {
+        for (const Player *p: allPlayers) {
             delete p;
         }
         allPlayers.clear();

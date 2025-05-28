@@ -238,6 +238,7 @@ namespace CoupG {
         this->lastAction = ActionType::Coup;
         game.validateTurnStart(*this);
         if (coins < 7) {
+            this->lastAction=ActionType::None;
             throw std::runtime_error("Not enough coins for coup");
         }
         coins -= 7;

@@ -828,7 +828,8 @@ void GameGUI::render() {
 
 
 int main() {
-    GameGUI gui(6);
+
+    GameGUI gui(3);
     gui.run();
     return 0;
 }

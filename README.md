@@ -16,7 +16,7 @@ modular object-oriented design, and a comprehensive unit test suite to ensure co
 - `GameGUI.cpp` / `GameGUI.h` – Graphical User Interface built with SFML.
 - `GameTest.cpp`, `PlayerTest.cpp` – Unit tests covering core logic and edge cases.
 - `Makefile` – Automates compiling, testing, memory checks, and launching the GUI.
-- `arial.ttf` – Font used for rendering text in the graphical interface.
+
 
 ---
 

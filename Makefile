@@ -46,8 +46,8 @@ $(TARGET_TEST): $(SRC_TEST)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Run valgrind on the unified test binary
-valgrind: $(TARGET_TEST)
-	valgrind --leak-check=full --track-origins=yes -s ./$(TARGET_TEST)
+valgrind: $(TARGET_MAIN)
+	valgrind --leak-check=full --track-origins=yes -s ./$(TARGET_MAIN)
 
 # Clean build files and executables
 clean:

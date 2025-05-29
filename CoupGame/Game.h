@@ -55,6 +55,8 @@ namespace CoupG {
 
         void setUnderArrest(const std::string &name);
 
+        void setCurrentPlayer(const Player* p);
+
         void nextTurn();
 
         std::string turn() const;

@@ -242,6 +242,7 @@ namespace CoupG {
         }
         coins -= 7;
         p.setActive(false);
+
         game.checkForWinner();
         game.manageNextTurn(*this);
     }

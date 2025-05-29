@@ -147,6 +147,17 @@ namespace CoupG {
         underArrest = name;
     }
 
+    void Game::setCurrentPlayer(const Player* p) {
+        for (size_t i = 0; i < allPlayers.size(); ++i) {
+            if (allPlayers[i] == p) {
+                current_player = i;
+                return;
+            }
+        }
+        throw std::invalid_argument("Player not found in the game.");
+    }
+
+
     /**
      * @brief Advances the turn to the next active player.
      * Also activates Merchant ability if applicable.

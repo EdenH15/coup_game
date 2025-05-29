@@ -265,28 +265,56 @@ void GameGUI::handlePlayerActionClick(const std::string &choice, CoupG::Player &
                 showMessageToPlayer("You don't have enough money to sanction.");
             }
         } else if (choice == "coup") {
-            try {
-                player.coup(*target);
+    try {
+        bool coupPrevented = false;
+        std::cout << "COUP on " << target->getName() << " with role: [" << target->getRole() << "]\n";
 
-                for (Player *p: game.getAllPlayers()) {
-                    if (p->getActive() && p != &player && p->getRole() == "General") {
-                        if (showYesNoPopup(
-                            font, p->getName() + ", do you want to prevent a coup against " + target->getName() +
-                                  "?")) {
-                            try {
-                                p->useAbility(*target);
-                                showMessageToPlayer("Coup was prevented by " + p->getName());
-                            } catch (...) {
-                                showMessageToPlayer("You don't have enough money to prevent coup");
-                            }
+        if (target->getRole() == "General") {
+            std::cout << "Asking General " << target->getName() << " if wants to prevent coup\n";
+            if (showYesNoPopup(font, target->getName() + ", do you want to prevent a coup against yourself?")) {
+                try {
+                    target->useAbility(*target);
+                    showMessageToPlayer("Coup was prevented by " + target->getName());
+                    coupPrevented = true;
+                } catch (...) {
+                    showMessageToPlayer("You don't have enough money to prevent the coup.");
+                }
+            }
+        }
+
+        if (!coupPrevented) {
+            for (Player *p : game.getAllPlayers()) {
+                if (p->getActive() && p != &player && p != target && p->getRole() == "General") {
+                    std::cout << "Asking General " << p->getName() << " if wants to prevent coup\n";
+                    if (showYesNoPopup(font, p->getName() + ", do you want to prevent a coup against " + target->getName() + "?")) {
+                        try {
+                            p->useAbility(*target);
+                            showMessageToPlayer("Coup was prevented by " + p->getName());
+                            coupPrevented = true;
                             break;
+                        } catch (...) {
+                            showMessageToPlayer("You don't have enough money to prevent the coup.");
                         }
                     }
                 }
-            } catch (...) {
-                showMessageToPlayer("You don't have enough money to coup.");
             }
         }
+
+        if (!coupPrevented) {
+            std::cout << "No one prevented the coup, performing coup\n";
+            player.coup(*target);
+        } else {
+            std::cout << "Coup prevented\n";
+            game.manageNextTurn(player);
+        }
+    }
+    catch (...) {
+        showMessageToPlayer("You don't have enough money to perform a coup.");
+    }
+}
+
+
+
     } else if (choice == "Invest" && player.getRole() == "Baron") {
         try {
             player.useAbility();
@@ -466,7 +494,7 @@ bool GameGUI::validatePlayerTurnStart(Player &player, sf::RenderWindow &window, 
  * Displays a short popup message to the player for 3 seconds.
  */
 void GameGUI::showMessageToPlayer(const std::string &message) {
-    sf::RenderWindow window(sf::VideoMode(600, 150), "הודעה לשחקן", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(700, 150), "הודעה לשחקן", sf::Style::Titlebar | sf::Style::Close);
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
@@ -510,7 +538,7 @@ void GameGUI::showMessageToPlayer(const std::string &message) {
  * @return true if "Yes" was clicked, false otherwise.
  */
 bool GameGUI::showYesNoPopup(sf::Font &font, const std::string &message) {
-    sf::RenderWindow popup(sf::VideoMode(500, 200), "Confirmation", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow popup(sf::VideoMode(650, 200), "Confirmation", sf::Style::Titlebar | sf::Style::Close);
 
     sf::Text msgText;
     msgText.setFillColor(sf::Color::White);

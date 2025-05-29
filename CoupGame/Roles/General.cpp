@@ -13,12 +13,12 @@ namespace CoupG {
     }
 
     void General::useAbility(Player &p) {
-        if (!this->getActive()) {
+        if (!this->getActive()&& &p!=this) {
             throw std::runtime_error("Inactive general cannot block.");
         }
 
         if (this->getCoins() < 5) {
-            throw std::runtime_error("2");
+            throw std::runtime_error("No enough money");
         }
 
         coins -= 5;

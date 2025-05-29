@@ -12,6 +12,10 @@
 #include "../CoupGame/Roles/Spy.h"
 using namespace CoupG;
 
+
+/**
+ * Test tax action behavior for multiple roles, including ability interactions.
+ */
 TEST_CASE("Tax action") {
     Game game(4);
     Player *baron = new Baron(game, "Dekel");
@@ -45,6 +49,10 @@ TEST_CASE("Tax action") {
     game.reset();
 }
 
+
+/**
+ * Test gather and sanction actions, including coin requirements and effects.
+ */
 TEST_CASE("Gather + Sanction action") {
     Game game(4);
     Player *baron = new Baron(game, "Dekel");
@@ -80,6 +88,9 @@ TEST_CASE("Gather + Sanction action") {
     game.reset();
 }
 
+/**
+ * Test arrest logic, including required conditions and special abilities.
+ */
 TEST_CASE("Arrest action") {
     Game game(4);
     Player *baron = new Baron(game, "Dekel");
@@ -124,6 +135,9 @@ TEST_CASE("Arrest action") {
     game.reset();
 }
 
+/**
+ * Test bribe action, including failed attempts and interactions with abilities.
+ */
 TEST_CASE("Bribe action") {
     Game game(3);
     Player *baron = new Baron(game, "Dekel");
@@ -164,6 +178,10 @@ TEST_CASE("Bribe action") {
     game.reset();
 }
 
+
+/**
+ * Test coup action behavior, including coin checks and role-based ability responses.
+ */
 TEST_CASE("Coup action") {
     Game game(4);
     Player *baron = new Baron(game, "Dekel");
@@ -190,6 +208,114 @@ TEST_CASE("Coup action") {
     general->useAbility(*merchant);
     CHECK(merchant->getActive() == true);
     CHECK(baron->getCoins() == 0);
+
+    game.reset();
+}
+
+
+/**
+ * Test basic getters and setters for player attributes.
+ */
+TEST_CASE("Getters and Setters") {
+    Game game(2);
+    Player *baron = new Baron(game, "Dekel");
+    game.addPlayer(baron);
+
+    baron->setCoins(5);
+    CHECK(baron->getCoins() == 5);
+
+    baron->setActive(false);
+    CHECK(baron->getActive() == false);
+
+    baron->setUnderSanction(true);
+    CHECK(baron->isUnderSanction() == true);
+
+    baron->setBlockArrest(true);
+    CHECK(baron->isBlockArrest() == true);
+
+    baron->setAnotherTurn(true);
+    CHECK(baron->getAnotherTurn() == true);
+
+    baron->setLastAction(ActionType::Tax);
+    CHECK(baron->getLastAction() == ActionType::Tax);
+
+    CHECK(baron->getName() == "Dekel");
+    game.reset();
+}
+
+/**
+ * Test direct calls to receiveSanctionBy and receiveArrestBy methods.
+ */
+TEST_CASE("Direct sanction/arrest effects") {
+    Game game(2);
+    Player *baron = new Baron(game, "Dekel");
+    Player *governor = new Governor(game, "Eden");
+    game.addPlayer(baron);
+    game.addPlayer(governor);
+
+    baron->setCoins(3);
+    CHECK_FALSE(governor->isUnderSanction());
+    governor->receiveSanctionBy(*baron);
+    CHECK(governor->isUnderSanction() == true);
+
+    governor->setCoins(3);
+    baron->setCoins(0);
+    governor->receiveArrestBy(*baron);
+    CHECK(governor->getCoins() == 2);
+    CHECK(baron->getCoins() == 1);
+    game.reset();
+}
+
+/**
+ * Test the behavior of the lastAction attribute, including updates and manual setting.
+ */
+TEST_CASE("Player lastAction indicator behavior") {
+    Game game(2);
+    Player *baron = new Baron(game, "Dekel");
+    Player *spy = new Spy(game, "Yossi");
+
+    game.addPlayer(baron);
+    game.addPlayer(spy);
+
+    SUBCASE("Initial lastAction is None") {
+        // At the beginning, before any action is performed, lastAction should be None
+        CHECK(baron->getLastAction() == ActionType::None);
+    }
+
+    SUBCASE("Valid actions update lastAction") {
+        // Performing a valid tax action should update lastAction to Tax
+        baron->tax();
+        CHECK(baron->getLastAction() == ActionType::Tax);
+
+        // Performing gather should update lastAction to Gather
+        spy->gather();
+        CHECK(spy->getLastAction() == ActionType::Gather);
+    }
+
+    SUBCASE("Failed actions do NOT update lastAction") {
+        // Try to perform a bribe with insufficient coins — should throw and not update lastAction
+        CHECK_THROWS(baron->bribe());
+        CHECK(baron->getLastAction() == ActionType::None); // Should still be None
+
+        // Perform a valid action to initialize lastAction
+        baron->tax();
+        CHECK(baron->getLastAction() == ActionType::Tax);
+
+        // Now perform an invalid coup with 0 coins, should throw and keep lastAction unchanged
+        spy->setCoins(0);
+        CHECK_THROWS(spy->coup(*baron));
+        CHECK(spy->getLastAction() == ActionType::None); // Should remain None
+    }
+
+    SUBCASE("Manual setLastAction works") {
+        // Test the manual setter and getter of lastAction
+        baron->setLastAction(ActionType::Bribe);
+        CHECK(baron->getLastAction() == ActionType::Bribe);
+
+        // Reset lastAction to None manually
+        baron->setLastAction(ActionType::None);
+        CHECK(baron->getLastAction() == ActionType::None);
+    }
 
     game.reset();
 }

@@ -226,7 +226,6 @@ TEST_CASE("Game reset clears game state") {
     CHECK(game.getAllPlayers().size()== 0);
     CHECK(game.getWinner() == "");
     CHECK(game.getUnderArrest()=="");
-
 }
 
 TEST_CASE("turn function") {

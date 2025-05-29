@@ -233,8 +233,8 @@ TEST_CASE("Getters and Setters") {
     baron->setBlockArrest(true);
     CHECK(baron->isBlockArrest() == true);
 
-    baron->setAnotherTurn(true);
-    CHECK(baron->getAnotherTurn() == true);
+    baron->setAnotherTurn(1);
+    CHECK(baron->getAnotherTurn() == 1);
 
     baron->setLastAction(ActionType::Tax);
     CHECK(baron->getLastAction() == ActionType::Tax);
@@ -242,6 +242,7 @@ TEST_CASE("Getters and Setters") {
     CHECK(baron->getName() == "Dekel");
     game.reset();
 }
+
 
 /**
  * Test direct calls to receiveSanctionBy and receiveArrestBy methods.

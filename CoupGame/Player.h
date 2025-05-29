@@ -22,7 +22,7 @@ namespace CoupG {
         std::string role;
         bool underSanction;
         bool blockArrest;
-        bool anotherTurn=false;
+        int anotherTurn=0;
         ActionType lastAction = ActionType::None;
 
 
@@ -35,7 +35,7 @@ namespace CoupG {
         virtual std::string getName();
         virtual int getCoins() const;
         virtual bool getActive() const;
-        virtual bool getAnotherTurn() const;
+        virtual int getAnotherTurn() const;
         virtual std::string getRole() const;
         virtual bool isUnderSanction() const;
         virtual ActionType getLastAction() const;
@@ -47,7 +47,7 @@ namespace CoupG {
         virtual void setUnderSanction(bool underSanction);
         virtual void setLastAction(ActionType action);
         virtual void setBlockArrest(bool blockArrest);
-        virtual void setAnotherTurn(bool anotherTurn);
+        virtual void setAnotherTurn(int n);
 
         // Actions
         virtual void gather();

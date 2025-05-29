@@ -76,10 +76,10 @@ namespace CoupG {
     }
 
     /**
-     * @brief Check if the player has earned another turn.
-     * @return True if the player has another turn.
-     */
-    bool Player::getAnotherTurn() const {
+ * @brief Returns the count of additional turns the player has earned.
+ * @return The number of additional turns the player currently has.
+ */
+    int Player::getAnotherTurn() const {
         return anotherTurn;
     }
 
@@ -125,14 +125,13 @@ namespace CoupG {
     }
 
     /**
-     * @brief Set whether the player gets another turn.
-     * @param anotherTurn True to grant another turn.
-     */
-    void Player::setAnotherTurn(const bool anotherTurn) {
-        this->anotherTurn = anotherTurn;
+   * @brief Set the number of additional turns the player has.
+   * @param n The number of additional turns to assign to the player.
+   */
+    void Player::setAnotherTurn(const int n) {
+        this->anotherTurn = n;
     }
 
-    // === Actions ===
 
     /**
      * @brief Gather one coin. Fails if under sanction.
@@ -177,7 +176,7 @@ namespace CoupG {
         }
         coins -= 4;
         lastAction = ActionType::Bribe;
-        anotherTurn = true;
+        anotherTurn+=1;
     }
 
     /**

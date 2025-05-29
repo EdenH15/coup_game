@@ -332,16 +332,17 @@ namespace CoupG {
      */
     void Game::manageNextTurn(Player &p) {
         const ActionType action = p.getLastAction();
-        if (!p.getAnotherTurn()) {
+        if (p.getAnotherTurn()==0) {
             if (p.isUnderSanction() && action != ActionType::Tax && action != ActionType::Gather) {
                 p.setUnderSanction(false);
             }
             if (p.isBlockArrest() && action != ActionType::Arrest) {
                 p.setBlockArrest(false);
             }
+            p.setAnotherTurn(0);
             nextTurn();
         } else {
-            p.setAnotherTurn(false);
+            p.setAnotherTurn(p.getAnotherTurn()-1);
         }
     }
 }
